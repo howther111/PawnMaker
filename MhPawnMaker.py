@@ -247,8 +247,8 @@ class HeroData():
 
         text = text + "\n【命中】" + str(self.outfits_total_hit) + \
                    "【回避】" + str(self.outfits_total_dodge) + \
-                   "【魔導】" + str(self.outfits_total_magic) + \
-                   "【抗魔】" + str(self.outfits_total_countermagic) + \
+                   "【心魂】" + str(self.outfits_total_magic) + \
+                   "【魂魄】" + str(self.outfits_total_countermagic) + \
                    "【行動】" + str(self.outfits_total_action) + \
                    "\n【耐久】" + str(self.outfits_total_hp) + \
                    "【精神】" + str(self.outfits_total_mp) + \
@@ -404,11 +404,11 @@ class HeroData():
         jsontext["data"]["params"][13]["value"] = self.outfits_total_dodge
 
         jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][14]["label"] = "魔導値"
+        jsontext["data"]["params"][14]["label"] = "心魂値"
         jsontext["data"]["params"][14]["value"] = self.outfits_total_magic
 
         jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][15]["label"] = "抗魔値"
+        jsontext["data"]["params"][15]["label"] = "魂魄値"
         jsontext["data"]["params"][15]["value"] = self.outfits_total_countermagic
 
         jsontext["data"]["params"].append({})
@@ -462,8 +462,8 @@ class HeroData():
                                        "C({HP}-YY)　残りHP\n" + \
                                        "C({MP}-YY)　残りMP\n\n" + \
                                        "//防御、+0欄に修正を記入\nAL+{回避値}+0　近・回避\n" \
-                                       "AL+{抗魔値}+0　遠・抗魔\nC(XX-{}-0)　被ダメージ、{}内に防御属性3文字\n\n" \
-                                       "//攻撃、+0欄に修正を記入\nAL+{命中値}+0　近・命中\nAL+{魔導値}+0　遠・魔導\n" + \
+                                       "AL+{魂魄値}+0　遠・魂魄\nC(XX-{}-0)　被ダメージ、{}内に防御属性3文字\n\n" \
+                                       "//攻撃、+0欄に修正を記入\nAL+{命中値}+0　近・命中\nAL+{心魂値}+0　遠・心魂\n" + \
                                        "2d6+" + outfits_main_weapon_shortattack_array[1] + "+0　" + \
                                        "〈" + outfits_main_weapon_shortattack_array[0] + "〉" + \
                                        self.outfits_main_weapon_shortname + "ダメージ\n" \
