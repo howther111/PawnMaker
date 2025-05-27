@@ -15,6 +15,7 @@ class HeroData():
     character_name = ""
     level = 0
     player_name = ""
+    hero_name = ""
     strong_total = 0
     strong_bonus = 0
     reflex_total = 0
@@ -89,6 +90,7 @@ class HeroData():
     def input_data(self, driver, input_url):
         self.url = input_url
         self.character_name = driver.find_element(by=By.ID, value="base.name").get_attribute("value")
+        self.hero_name = driver.find_element(by=By.ID, value="base.nameKana").get_attribute("value")
         self.level = driver.find_element(by=By.ID, value="base.level").get_attribute("value")
         self.player_name = driver.find_element(by=By.ID, value="base.player").get_attribute("value")
         self.strong_total = driver.find_element(by=By.ID, value="abl.strong.total").get_attribute("value")
@@ -241,9 +243,8 @@ class HeroData():
 
     def output_text(self):
         # 駒のテキストデータを出力する
-        text = "PC:" + self.character_name +  \
-                   " PL:" + self.player_name + "\n" + \
-                   "レベル:" + self.level
+        text = "PC:" + self.character_name + "／" + self.hero_name +  \
+                   "\nPL:" + self.player_name + " レベル:" + self.level
 
         text = text + "\n財産ポイント:" + self.add_fortune_point
 
@@ -302,7 +303,7 @@ class HeroData():
         jsontext = {}
         jsontext["kind"] = "character"
         jsontext["data"] = {}
-        jsontext["data"]["name"] = self.character_name
+        jsontext["data"]["name"] = self.character_name + "／" + self.hero_name
         jsontext["data"]["memo"] = text_data
         jsontext["data"]["initiative"] = int(self.outfits_total_action)
         jsontext["data"]["status"] = []
