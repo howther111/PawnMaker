@@ -289,7 +289,7 @@ class HeroData():
 
         print(text)
 
-        file_name = self.character_name + "_キャラクターテキストデータ.txt"
+        file_name = self.character_name + "／" + self.hero_name + "_キャラクターテキストデータ.txt"
 
         f = open(file_name, 'w', encoding="utf-8")
         f.write(text)
