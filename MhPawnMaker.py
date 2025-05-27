@@ -502,7 +502,7 @@ class HeroData():
 
         jsontext["data"]["commands"] = command
         jsontext["data"]["externalUrl"] = self.url
-        file_name = self.character_name + "_キャラクター駒データ.txt"
+        file_name = self.character_name + "／" + self.hero_name + "_キャラクター駒データ.txt"
 
         with open(file_name, 'w', encoding="utf-8") as file:  # 第二引数：writableオプションを指定
             json.dump(jsontext, file, ensure_ascii=False)
@@ -581,7 +581,7 @@ class CharacterData():
 
     def output_text(self):
         # 駒のテキストデータを出力する
-        text = "PC:" + self.character_name + \
+        text = "PC:" + self.character_name + "／" + self.hero_name + \
                " PL:" + self.player_name + "\n"
 
         text = text + "【体力】" + str(self.strong_total) + "/+" + str(self.strong_bonus) + \
