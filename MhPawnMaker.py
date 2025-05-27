@@ -461,17 +461,17 @@ class HeroData():
         command = "//アクション\nムーブ:\nマイナー:\nメジャー:\n//リソース\n" + \
                                        "C({HP}-YY)　残りHP\n" + \
                                        "C({MP}-YY)　残りMP\n\n" + \
-                                       "//防御、+0欄に修正を記入\nAL+{回避値}+0　近・回避\n" \
-                                       "AL+{魂魄値}+0　遠・魂魄\nC(XX-{}-0)　被ダメージ、{}内に防御属性3文字\n\n" \
-                                       "//攻撃、+0欄に修正を記入\nAL+{命中値}+0　近・命中\nAL+{心魂値}+0　遠・心魂\n" + \
+                                       "//防御、+0欄に修正を記入\n2d6+{回避値}+0　近・回避\n" \
+                                       "2d6+{魂魄値}+0　遠・魂魄\nC(XX-{}-0)　被ダメージ、{}内に防御属性3文字\n\n" \
+                                       "//攻撃、+0欄に修正を記入\n2d6+{命中値}+0　近・命中\n2d6+{心魂値}+0　遠・心魂\n" + \
                                        "2d6+" + outfits_main_weapon_shortattack_array[1] + "+0　" + \
                                        "〈" + outfits_main_weapon_shortattack_array[0] + "〉" + \
                                        self.outfits_main_weapon_shortname + "ダメージ\n" \
                                        "2d6+" + outfits_sub_weapon_shortattack_array[1] + "+0　" + \
                                        "〈" + outfits_sub_weapon_shortattack_array[0] + "〉" + \
                                        self.outfits_sub_weapon_shortname + "ダメージ\n" \
-                                       "\n//能力値判定\nAL+{体力B}  体力判定\nAL+{反射B}  反射判定\nAL+{知覚B}  " \
-                                       "知覚判定\nAL+{理知B}  理知判定\nAL+{意志B}  意志判定\nAL+{幸運B}  幸運判定"
+                                       "\n//能力値判定\n2d6+{体力B}  体力判定\n2d6+{反射B}  反射判定\n2d6+{知覚B}  " \
+                                       "知覚判定\n2d6+{理知B}  理知判定\n2d6+{意志B}  意志判定\n2d6+{幸運B}  幸運判定"
         command = command + "\n//特技"
         for i in range(len(self.skill_memo)):
             if not self.skill_name[i] == "":
@@ -683,8 +683,8 @@ class CharacterData():
         jsontext["data"]["invisible"] = "false"
         jsontext["data"]["hideStatus"] = "false"
         jsontext["data"]["externalUrl"] = self.url
-        jsontext["data"]["commands"] = "//能力値判定\nMG+{体力B}  体力判定\nMG+{反射B}  反射判定\nMG+{知覚B}  " \
-                                       "知覚判定\nMG+{理知B}  理知判定\nMG+{意志B}  意志判定\nMG+{幸運B}  幸運判定"
+        jsontext["data"]["commands"] = "//能力値判定\n2d6+{体力B}  体力判定\n2d6+{反射B}  反射判定\n2d6+{知覚B}  " \
+                                       "知覚判定\n2d6+{理知B}  理知判定\n2d6+{意志B}  意志判定\n2d6+{幸運B}  幸運判定"
         file_name = self.character_name + "_未装備駒データ.txt"
 
         with open(file_name, 'w', encoding="utf-8") as file:  # 第二引数：writableオプションを指定
