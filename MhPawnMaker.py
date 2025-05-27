@@ -33,6 +33,7 @@ class HeroData():
     outfits_total_magic = 0
     outfits_total_countermagic = 0
     outfits_total_action = 0
+    outfits_total_fp = 0
     outfits_total_hp = 0
     outfits_total_mp = 0
     outfits_total_attack = 0
@@ -129,6 +130,7 @@ class HeroData():
         self.outfits_total_magic = driver.find_element(by=By.ID, value="outfits.total.magic").get_attribute("value")
         self.outfits_total_countermagic = driver.find_element(by=By.ID, value="outfits.total.countermagic").get_attribute("value")
         self.outfits_total_action = driver.find_element(by=By.ID, value="outfits.total.action").get_attribute("value")
+        self.outfits_total_fp = driver.find_element(by=By.ID, value="outfits.total.fp").get_attribute("value")
         self.outfits_total_hp = driver.find_element(by=By.ID, value="outfits.total.hp").get_attribute("value")
         self.outfits_total_mp = driver.find_element(by=By.ID, value="outfits.total.mp").get_attribute("value")
         self.outfits_total_action = driver.find_element(by=By.ID, value="outfits.total.action").get_attribute("value")
@@ -310,6 +312,11 @@ class HeroData():
         jsontext["data"]["status"][0]["max"] = self.level
 
         jsontext["data"]["status"].append({})
+        jsontext["data"]["status"][1]["label"] = "FP"
+        jsontext["data"]["status"][1]["value"] = self.outfits_total_fp
+        jsontext["data"]["status"][1]["max"] = self.outfits_total_fp
+
+        jsontext["data"]["status"].append({})
         jsontext["data"]["status"][1]["label"] = "HP"
         jsontext["data"]["status"][1]["value"] = self.outfits_total_hp
         jsontext["data"]["status"][1]["max"] = self.outfits_total_hp
@@ -459,6 +466,7 @@ class HeroData():
         jsontext["data"]["invisible"] = "false"
         jsontext["data"]["hideStatus"] = "false"
         command = "//アクション\nムーブ:\nマイナー:\nメジャー:\n//リソース\n" + \
+                                       "C({FP}-YY)　残りFP\n" + \
                                        "C({HP}-YY)　残りHP\n" + \
                                        "C({MP}-YY)　残りMP\n\n" + \
                                        "//防御、+0欄に修正を記入\n2d6+{回避値}+0　近・回避\n" \
