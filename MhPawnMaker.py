@@ -269,16 +269,6 @@ class HeroData():
                 " 代償:" + self.outfits_sub_weapon_shortstrong + \
                 "\n攻撃力:" + self.outfits_sub_weapon_shortattack
 
-        text = text + "\n[*]魔右:" + self.outfits_magicrightname + \
-                   " 射程:" + self.outfits_magicrightrange + \
-                   " 代償:" + self.outfits_magicrightstrong + \
-                   "\n攻撃力:" + self.outfits_magicmain_weapon_shortattack
-
-        text = text + "\n[*]魔左:" + self.outfits_magicleftname + \
-                   " 射程:" + self.outfits_magicleftrange + \
-                   " 代償:" + self.outfits_magicleftstrong + \
-                   "\n攻撃力:" + self.outfits_magicsub_weapon_shortattack
-
         text = text + "\n防御力:斬" + self.armourstotal_slash + \
                 "/刺" + self.armourstotal_pierce + \
                 "/殴" + self.armourstotal_crash + \
