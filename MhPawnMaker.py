@@ -11,7 +11,7 @@ import time
 import json
 
 
-class GuardianData():
+class HeroData():
     character_name = ""
     level = 0
     player_name = ""
@@ -38,23 +38,23 @@ class GuardianData():
     outfits_total_attack = 0
     outfits_total_battlespeed_total = ""
 
-    outfits_rightname = ""
-    outfits_rightattack = ""
-    outfits_rightrange = ""
-    outfits_rightstrong = ""
+    outfits_main_weapon_shortname = ""
+    outfits_main_weapon_shortattack = ""
+    outfits_main_weapon_shortrange = ""
+    outfits_main_weapon_shortstrong = ""
 
-    outfits_leftname = ""
-    outfits_leftattack = ""
-    outfits_leftrange = ""
-    outfits_leftstrong = ""
+    outfits_sub_weapon_shortname = ""
+    outfits_sub_weapon_shortattack = ""
+    outfits_sub_weapon_shortrange = ""
+    outfits_sub_weapon_shortstrong = ""
 
     outfits_magicrightname = ""
-    outfits_magicrightattack = ""
+    outfits_magicmain_weapon_shortattack = ""
     outfits_magicrightrange = ""
     outfits_magicrightstrong = ""
 
     outfits_magicleftname = ""
-    outfits_magicleftattack = ""
+    outfits_magicsub_weapon_shortattack = ""
     outfits_magicleftrange = ""
     outfits_magicleftstrong = ""
 
@@ -137,41 +137,15 @@ class GuardianData():
 
         self.add_fortune_point = driver.find_element(by=By.ID, value="fortunepoint").get_attribute("value")
 
-        self.outfits_rightname = driver.find_element(by=By.ID, value="outfits.total.rightname").get_attribute("value")
-        self.outfits_rightattack = driver.find_element(by=By.ID, value="outfits.total.rightattack").get_attribute("value")
-        self.outfits_rightrange = driver.find_element(by=By.ID, value="outfits.total.rightrange").get_attribute("value")
-        self.outfits_rightstrong = driver.find_element(by=By.ID, value="outfits.right.0.cost").get_attribute("value")
+        self.outfits_main_weapon_shortname = driver.find_element(by=By.ID, value="outfits.total.main_weapon_shortname").get_attribute("value")
+        self.outfits_main_weapon_shortattack = driver.find_element(by=By.ID, value="outfits.total.main_weapon_shortattack").get_attribute("value")
+        self.outfits_main_weapon_shortrange = driver.find_element(by=By.ID, value="outfits.total.main_weapon_shortrange").get_attribute("value")
+        self.outfits_main_weapon_shortstrong = driver.find_element(by=By.ID, value="outfits.total.main_weapon_shortstrong").get_attribute("value")
 
-        self.outfits_leftname = driver.find_element(by=By.ID, value="outfits.total.leftname").get_attribute("value")
-        self.outfits_leftattack = driver.find_element(by=By.ID, value="outfits.total.leftattack").get_attribute("value")
-        self.outfits_leftrange = driver.find_element(by=By.ID, value="outfits.total.leftrange").get_attribute("value")
-        self.outfits_leftstrong = driver.find_element(by=By.ID, value="outfits.left.0.cost").get_attribute("value")
-
-        self.outfits_magicrightname = driver.find_element(by=By.ID,
-                                                                value="outfits.total.magicrightname").get_attribute(
-            "value")
-        self.outfits_magicrightattack = driver.find_element(by=By.ID,
-                                                                  value="outfits.total.magicrightattack").get_attribute(
-            "value")
-        self.outfits_magicrightrange = driver.find_element(by=By.ID,
-                                                                 value="outfits.total.magicrightrange").get_attribute(
-            "value")
-        self.outfits_magicrightstrong = driver.find_element(by=By.ID,
-                                                                  value="outfits.magicright.0.cost").get_attribute(
-            "value")
-
-        self.outfits_magicleftname = driver.find_element(by=By.ID,
-                                                               value="outfits.total.magicleftname").get_attribute(
-            "value")
-        self.outfits_magicleftattack = driver.find_element(by=By.ID,
-                                                                 value="outfits.total.magicleftattack").get_attribute(
-            "value")
-        self.outfits_magicleftrange = driver.find_element(by=By.ID,
-                                                                value="outfits.total.magicleftrange").get_attribute(
-            "value")
-        self.outfits_magicleftstrong = driver.find_element(by=By.ID,
-                                                                 value="outfits.magicleft.0.cost").get_attribute(
-            "value")
+        self.outfits_sub_weapon_shortname = driver.find_element(by=By.ID, value="outfits.total.sub_weapon_shortname").get_attribute("value")
+        self.outfits_sub_weapon_shortattack = driver.find_element(by=By.ID, value="outfits.total.sub_weapon_shortattack").get_attribute("value")
+        self.outfits_sub_weapon_shortrange = driver.find_element(by=By.ID, value="outfits.total.sub_weapon_shortrange").get_attribute("value")
+        self.outfits_sub_weapon_shortstrong = driver.find_element(by=By.ID, value="outfits.total.sub_weapon_shortstrong").get_attribute("value")
 
         self.armourstotal_slash = driver.find_element(by=By.ID, value="armourstotal.slash").get_attribute("value")
         self.armourstotal_pierce = driver.find_element(by=By.ID, value="armourstotal.pierce").get_attribute("value")
@@ -285,25 +259,25 @@ class GuardianData():
             text = text + special + "/"
         text = text[:-1]
 
-        text = text + "\n[*]武右:" + self.outfits_rightname + \
-                " 射程:" + self.outfits_rightrange + \
-                " 代償:" + self.outfits_rightstrong + \
-                "\n攻撃力:" + self.outfits_rightattack
+        text = text + "\n[*]武器１:" + self.outfits_main_weapon_shortname + \
+                " 射程:" + self.outfits_main_weapon_shortrange + \
+                " 代償:" + self.outfits_main_weapon_shortstrong + \
+                "\n攻撃力:" + self.outfits_main_weapon_shortattack
 
-        text = text + "\n[*]武左:" + self.outfits_leftname + \
-                " 射程:" + self.outfits_leftrange + \
-                " 代償:" + self.outfits_leftstrong + \
-                "\n攻撃力:" + self.outfits_leftattack
+        text = text + "\n[*]武器２:" + self.outfits_sub_weapon_shortname + \
+                " 射程:" + self.outfits_sub_weapon_shortrange + \
+                " 代償:" + self.outfits_sub_weapon_shortstrong + \
+                "\n攻撃力:" + self.outfits_sub_weapon_shortattack
 
         text = text + "\n[*]魔右:" + self.outfits_magicrightname + \
                    " 射程:" + self.outfits_magicrightrange + \
                    " 代償:" + self.outfits_magicrightstrong + \
-                   "\n攻撃力:" + self.outfits_magicrightattack
+                   "\n攻撃力:" + self.outfits_magicmain_weapon_shortattack
 
         text = text + "\n[*]魔左:" + self.outfits_magicleftname + \
                    " 射程:" + self.outfits_magicleftrange + \
                    " 代償:" + self.outfits_magicleftstrong + \
-                   "\n攻撃力:" + self.outfits_magicleftattack
+                   "\n攻撃力:" + self.outfits_magicsub_weapon_shortattack
 
         text = text + "\n防御力:斬" + self.armourstotal_slash + \
                 "/刺" + self.armourstotal_pierce + \
@@ -487,10 +461,8 @@ class GuardianData():
         jsontext["data"]["params"][25]["label"] = "闇防御"
         jsontext["data"]["params"][25]["value"] = self.armourstotal_dark
 
-        outfits_rightattack_array = self.outfits_rightattack.split("+")
-        outfits_leftattack_array = self.outfits_leftattack.split("+")
-        outfits_magicrightattack_array = self.outfits_magicrightattack.split("+")
-        outfits_magicleftattack_array = self.outfits_magicleftattack.split("+")
+        outfits_main_weapon_shortattack_array = self.outfits_main_weapon_shortattack.split("+")
+        outfits_sub_weapon_shortattack_array = self.outfits_sub_weapon_shortattack.split("+")
 
         jsontext["data"]["active"] = "true"
         jsontext["data"]["secret"] = "false"
@@ -502,18 +474,12 @@ class GuardianData():
                                        "//防御、+0欄に修正を記入\nAL+{回避値}+0　近・回避\n" \
                                        "AL+{抗魔値}+0　遠・抗魔\nC(XX-{}-0)　被ダメージ、{}内に防御属性3文字\n\n" \
                                        "//攻撃、+0欄に修正を記入\nAL+{命中値}+0　近・命中\nAL+{魔導値}+0　遠・魔導\n" + \
-                                       "2d6+" + outfits_rightattack_array[1] + "+0　" + \
-                                       "〈" + outfits_rightattack_array[0] + "〉" + \
-                                       self.outfits_rightname + "ダメージ\n" \
-                                       "2d6+" + outfits_leftattack_array[1] + "+0　" + \
-                                       "〈" + outfits_leftattack_array[0] + "〉" + \
-                                       self.outfits_leftname + "ダメージ\n" \
-                                       "2d6+" + outfits_magicrightattack_array[1] + "+0　" + \
-                                       "〈" + outfits_magicrightattack_array[0] + "〉" + \
-                                       self.outfits_magicrightname + "ダメージ\n" \
-                                       "2d6+" + outfits_magicleftattack_array[1] + "+0　" + \
-                                       "〈" + outfits_magicleftattack_array[0] + "〉" + \
-                                       self.outfits_magicleftname + "ダメージ\n" \
+                                       "2d6+" + outfits_main_weapon_shortattack_array[1] + "+0　" + \
+                                       "〈" + outfits_main_weapon_shortattack_array[0] + "〉" + \
+                                       self.outfits_main_weapon_shortname + "ダメージ\n" \
+                                       "2d6+" + outfits_sub_weapon_shortattack_array[1] + "+0　" + \
+                                       "〈" + outfits_sub_weapon_shortattack_array[0] + "〉" + \
+                                       self.outfits_sub_weapon_shortname + "ダメージ\n" \
                                        "\n//能力値判定\nAL+{体力B}  体力判定\nAL+{反射B}  反射判定\nAL+{知覚B}  " \
                                        "知覚判定\nAL+{理知B}  理知判定\nAL+{意志B}  意志判定\nAL+{幸運B}  幸運判定"
         command = command + "\n//特技"
@@ -743,7 +709,7 @@ def get_data(value):
     url = value
     driver = webdriver.Chrome()
     driver.get(url)
-    guardian = GuardianData()
+    guardian = HeroData()
     time.sleep(5)
 
     guardian.input_data(driver, url)
@@ -758,7 +724,7 @@ def get_data(value):
 
 if __name__ == "__main__":
     root = tkinter.Tk()
-    root.title(u"アルシャードセイヴァーRPG ココフォリア用駒データ作成ツール")
+    root.title(u"マージナルヒーローズRPG ココフォリア用駒データ作成ツール")
     root.geometry("400x150")
 
 
@@ -779,7 +745,7 @@ if __name__ == "__main__":
     frame4.grid(row=2, column=1)
 
     # ラベル
-    Static1 = tkinter.Label(frame1,text=u'キャラクターシートURL\nhttps://character-sheets.appspot.com/al2/')
+    Static1 = tkinter.Label(frame1,text=u'キャラクターシートURL\nhttps://character-sheets.appspot.com/mar/')
     Static1.pack()
 
     # エントリー
