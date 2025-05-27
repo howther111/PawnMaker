@@ -252,7 +252,8 @@ class HeroData():
                    "【心魂】" + str(self.outfits_total_magic) + \
                    "【魂魄】" + str(self.outfits_total_countermagic) + \
                    "【行動】" + str(self.outfits_total_action) + \
-                   "\n【耐久】" + str(self.outfits_total_hp) + \
+                   "\n【力場】" + str(self.outfits_total_fp) + \
+                   "【耐久】" + str(self.outfits_total_hp) + \
                    "【精神】" + str(self.outfits_total_mp) + \
                    "【移動力】" + str(self.outfits_total_battlespeed_total)
 
