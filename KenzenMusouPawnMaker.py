@@ -309,12 +309,6 @@ class HeroData():
         i = 0
 
         jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][i]["label"] = "レベル"
-        jsontext["data"]["status"][i]["value"] = self.level
-        jsontext["data"]["status"][i]["max"] = self.level
-        i = i + 1
-
-        jsontext["data"]["status"].append({})
         jsontext["data"]["status"][i]["label"] = "HP"
         jsontext["data"]["status"][i]["value"] = self.outfits_total_hp
         jsontext["data"]["status"][i]["max"] = self.outfits_total_hp
@@ -324,6 +318,12 @@ class HeroData():
         jsontext["data"]["status"][i]["label"] = "MP"
         jsontext["data"]["status"][i]["value"] = self.outfits_total_mp
         jsontext["data"]["status"][i]["max"] = self.outfits_total_mp
+        i = i + 1
+
+        jsontext["data"]["status"].append({})
+        jsontext["data"]["status"][i]["label"] = "気合カード"
+        jsontext["data"]["status"][i]["value"] = 1
+        jsontext["data"]["status"][i]["max"] = 99
         i = i + 1
 
         jsontext["data"]["status"].append({})
@@ -363,15 +363,15 @@ class HeroData():
             jsontext["data"]["status"][i]["max"] = 1
             i = i + 1
 
-        jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][i]["label"] = "気合カード"
-        jsontext["data"]["status"][i]["value"] = 1
-        jsontext["data"]["status"][i]["max"] = 99
-        i = i + 1
-
         jsontext["data"]["params"] = []
 
         j = 0
+
+        jsontext["data"]["status"].append({})
+        jsontext["data"]["status"][j]["label"] = "レベル"
+        jsontext["data"]["status"][j]["value"] = self.level
+        jsontext["data"]["status"][j]["max"] = self.level
+        j = j + 1
 
         jsontext["data"]["params"].append({})
         jsontext["data"]["params"][j]["label"] = "体力基本値"
