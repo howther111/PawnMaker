@@ -513,7 +513,6 @@ class HeroData():
         jsontext["data"]["invisible"] = "false"
         jsontext["data"]["hideStatus"] = "false"
         command = "//アクション\nムーブ:\nマイナー:\nメジャー:\n//リソース\n" + \
-                                       "C({FP}-YY)　残りFP\n" + \
                                        "C({HP}-YY)　残りHP\n" + \
                                        "C({MP}-YY)　残りMP\n\n" + \
                                        "//防御、+0欄に修正を記入\n2d6+{回避値}+0　回避\n" \
