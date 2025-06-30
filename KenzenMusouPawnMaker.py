@@ -367,10 +367,10 @@ class HeroData():
 
         j = 0
 
-        jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][j]["label"] = "レベル"
-        jsontext["data"]["status"][j]["value"] = self.level
-        jsontext["data"]["status"][j]["max"] = self.level
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "レベル"
+        jsontext["data"]["params"][j]["value"] = self.level
+        jsontext["data"]["params"][j]["max"] = self.level
         j = j + 1
 
         jsontext["data"]["params"].append({})
