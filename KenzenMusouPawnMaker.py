@@ -274,12 +274,6 @@ class HeroData():
         text = text + "\n奥義:"
         text = text + self.specials_1st + "/" + self.specials_2nd + "/" + self.specials_3rd
 
-        text = text + "\n[*]殴攻撃力:" + self.outfits_total_attackHit
-
-        text = text + "\n[*]投攻撃力:" + self.outfits_total_attackThrow
-
-        text = text + "\n[*]極攻撃力:" + self.outfits_total_attackLock
-
         text = text + "\nアイテム:"
         for item in self.items:
             text = text + item + "/"
