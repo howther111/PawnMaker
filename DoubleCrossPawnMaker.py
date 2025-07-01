@@ -229,7 +229,7 @@ class OveredData():
 
         print(text)
 
-        file_name = self.character_name + "_キャラクターテキストデータ.txt"
+        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_キャラクターテキストデータ.txt"
 
         f = open(file_name, 'w', encoding="utf-8")
         f.write(text)
@@ -425,7 +425,7 @@ class OveredData():
 
         jsontext["data"]["commands"] = command
         jsontext["data"]["externalUrl"] = self.url
-        file_name = self.character_name + "_キャラクター駒データ.txt"
+        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_キャラクター駒データ.txt"
 
         with open(file_name, 'w', encoding="utf-8") as file:  # 第二引数：writableオプションを指定
             json.dump(jsontext, file, ensure_ascii=False)
