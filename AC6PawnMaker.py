@@ -696,7 +696,7 @@ class ArmoredCoreData():
 
         print(text)
 
-        file_name = self.ac_name.replace("/", "_") + "_ACテキストデータ.txt"
+        file_name = self.ac_name.replace("/", "_").replace("\"", "”") + "_ACテキストデータ.txt"
 
         f = open(file_name, 'w', encoding="utf-8")
         f.write(text)
@@ -1031,7 +1031,7 @@ class ArmoredCoreData():
         jsontext["data"]["commands"] = command
 
         jsontext["data"]["externalUrl"] = self.url
-        file_name = self.ac_name.replace("/", "_") + "_AC駒データ.txt"
+        file_name = self.ac_name.replace("/", "_").replace("\"", "”") + "_AC駒データ.txt"
 
         with open(file_name, 'w', encoding="utf-8") as filedata:  # 第二引数：writableオプションを指定
             json.dump(jsontext, filedata, ensure_ascii=False)

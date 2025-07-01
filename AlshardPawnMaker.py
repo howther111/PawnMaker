@@ -321,7 +321,7 @@ class GuardianData():
 
         print(text)
 
-        file_name = self.character_name + "_キャラクターテキストデータ.txt"
+        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_キャラクターテキストデータ.txt"
 
         f = open(file_name, 'w', encoding="utf-8")
         f.write(text)
@@ -536,7 +536,7 @@ class GuardianData():
 
         jsontext["data"]["commands"] = command
         jsontext["data"]["externalUrl"] = self.url
-        file_name = self.character_name + "_キャラクター駒データ.txt"
+        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_キャラクター駒データ.txt"
 
         with open(file_name, 'w', encoding="utf-8") as file:  # 第二引数：writableオプションを指定
             json.dump(jsontext, file, ensure_ascii=False)
@@ -637,7 +637,7 @@ class CharacterData():
 
         print(text)
 
-        file_name = self.character_name + "_未装備テキストデータ.txt"
+        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_未装備テキストデータ.txt"
 
         f = open(file_name, 'w', encoding="utf-8")
         f.write(text)
@@ -729,7 +729,7 @@ class CharacterData():
         jsontext["data"]["externalUrl"] = self.url
         jsontext["data"]["commands"] = "//能力値判定\nAL+{体力B}  体力判定\nAL+{反射B}  反射判定\nAL+{知覚B}  " \
                                        "知覚判定\nAL+{理知B}  理知判定\nAL+{意志B}  意志判定\nAL+{幸運B}  幸運判定"
-        file_name = self.character_name + "_未装備駒データ.txt"
+        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_未装備駒データ.txt"
 
         with open(file_name, 'w', encoding="utf-8") as file:  # 第二引数：writableオプションを指定
             json.dump(jsontext, file, ensure_ascii=False)
