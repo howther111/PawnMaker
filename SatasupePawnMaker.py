@@ -98,6 +98,20 @@ class HeroData():
         jsontext["data"]["initiative"] = int(self.initiative)
         jsontext["data"]["status"] = []
 
+        i = 0
+
+        jsontext["data"]["status"].append({})
+        jsontext["data"]["status"][i]["label"] = "肉体"
+        jsontext["data"]["status"][i]["value"] = self.body
+        jsontext["data"]["status"][i]["max"] = self.body
+        i = i + 1
+
+        jsontext["data"]["status"].append({})
+        jsontext["data"]["status"][i]["label"] = "精神"
+        jsontext["data"]["status"][i]["value"] = self.mind
+        jsontext["data"]["status"][i]["max"] = self.mind
+        i = i + 1
+
         jsontext["data"]["params"] = []
 
         j = 0
@@ -128,16 +142,6 @@ class HeroData():
         j = j + 1
 
         jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][j]["label"] = "肉体"
-        jsontext["data"]["params"][j]["value"] = self.body
-        j = j + 1
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][j]["label"] = "精神"
-        jsontext["data"]["params"][j]["value"] = self.mind
-        j = j + 1
-
-        jsontext["data"]["params"].append({})
         jsontext["data"]["params"][j]["label"] = "性業値"
         jsontext["data"]["params"][j]["value"] = self.emotion
         j = j + 1
@@ -161,7 +165,8 @@ class HeroData():
         jsontext["data"]["secret"] = "false"
         jsontext["data"]["invisible"] = "false"
         jsontext["data"]["hideStatus"] = "false"
-        command = ""
+        command = ("//行為判定 0に難易度と必要成功度を入れる\n{犯罪}r>=0[0]　犯罪判定\n{生活}r>=0[0]　生活判定\n{恋愛}r>=0[0]　恋愛判定\n"
+                   "{教養}r>=0[0]　教養判定\n{戦闘}r>=0[0]　戦闘判定\n{攻撃力}r>=0[0]　攻撃力判定")
 
         jsontext["data"]["commands"] = command
         jsontext["data"]["externalUrl"] = self.url
