@@ -166,7 +166,7 @@ class HeroData():
         jsontext["data"]["invisible"] = "false"
         jsontext["data"]["hideStatus"] = "false"
         command = ("//行為判定 0に難易度と必要成功度を入れる\n{犯罪}r>=0[0]　犯罪判定\n{生活}r>=0[0]　生活判定\n{恋愛}r>=0[0]　恋愛判定\n"
-                   "{教養}r>=0[0]　教養判定\n{戦闘}r>=0[0]　戦闘判定\n{攻撃力}r>=0[0]　攻撃力判定")
+                   "{教養}r>=0[0]　教養判定\n{戦闘}r>=0[0]　戦闘判定\n{攻撃力}r>=0[0]　攻撃力判定\n//一般判定\n2d6\n1d6")
 
         jsontext["data"]["commands"] = command
         jsontext["data"]["externalUrl"] = self.url
