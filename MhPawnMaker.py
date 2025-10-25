@@ -360,6 +360,8 @@ class HeroData():
                 jsontext["data"]["status"][i]["value"] = 1
                 jsontext["data"]["status"][i]["max"] = 1
 
+            i = i + 1
+
         jsontext["data"]["params"] = []
 
         jsontext["data"]["params"].append({})
