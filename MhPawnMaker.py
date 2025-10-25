@@ -281,10 +281,10 @@ class HeroData():
                 "/光" + self.armourstotal_light + \
                 "/闇" + self.armourstotal_dark
 
-        text = text + "\nアイテム:"
-        for item in self.items:
-            text = text + item + "/"
-        text = text[:-1]
+        #text = text + "\nアイテム:"
+        #for item in self.items:
+        #    text = text + item + "/"
+        #text = text[:-1]
 
         print(text)
 
@@ -348,11 +348,17 @@ class HeroData():
             i = i + 1
 
         for item in self.items:
-            jsontext["data"]["status"].append({})
-            jsontext["data"]["status"][i]["label"] = item
-            jsontext["data"]["status"][i]["value"] = 1
-            jsontext["data"]["status"][i]["max"] = 1
-            i = i + 1
+            itemnum = item.split("*")
+            if len(itemnum) > 1:
+                jsontext["data"]["status"].append({})
+                jsontext["data"]["status"][i]["label"] = itemnum[0]
+                jsontext["data"]["status"][i]["value"] = itemnum[1]
+                jsontext["data"]["status"][i]["max"] = itemnum[1]
+            else:
+                jsontext["data"]["status"].append({})
+                jsontext["data"]["status"][i]["label"] = item
+                jsontext["data"]["status"][i]["value"] = 1
+                jsontext["data"]["status"][i]["max"] = 1
 
         jsontext["data"]["params"] = []
 
