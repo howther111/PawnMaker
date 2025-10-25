@@ -322,10 +322,10 @@ class GuardianData():
                 "/光" + self.armourstotal_light + \
                 "/闇" + self.armourstotal_dark
 
-        text = text + "\nアイテム:"
-        for item in self.items:
-            text = text + item + "/"
-        text = text[:-1]
+        #text = text + "\nアイテム:"
+        #for item in self.items:
+        #    text = text + item + "/"
+        #text = text[:-1]
 
         print(text)
 
@@ -383,10 +383,50 @@ class GuardianData():
             i = i + 1
 
         for item in self.items:
+            itemnum = item.split("*")
+            if len(itemnum) > 1:
+                jsontext["data"]["status"].append({})
+                jsontext["data"]["status"][i]["label"] = itemnum[0]
+                jsontext["data"]["status"][i]["value"] = itemnum[1]
+                jsontext["data"]["status"][i]["max"] = itemnum[1]
+            else:
+                jsontext["data"]["status"].append({})
+                jsontext["data"]["status"][i]["label"] = item
+                jsontext["data"]["status"][i]["value"] = 1
+                jsontext["data"]["status"][i]["max"] = 1
+
+            i = i + 1
+
+        if "/" in self.outfits_main_weapon_shortstrong:
+            mws_ammo = self.outfits_main_weapon_shortstrong.split("/")
             jsontext["data"]["status"].append({})
-            jsontext["data"]["status"][i]["label"] = item
-            jsontext["data"]["status"][i]["value"] = 1
-            jsontext["data"]["status"][i]["max"] = 1
+            jsontext["data"]["status"][i]["label"] = self.outfits_main_weapon_shortname + "_弾数"
+            jsontext["data"]["status"][i]["value"] = mws_ammo[1]
+            jsontext["data"]["status"][i]["max"] = mws_ammo[1]
+            i = i + 1
+
+        if "/" in self.outfits_sub_weapon_shortstrong:
+            sws_ammo = self.outfits_sub_weapon_shortstrong.split("/")
+            jsontext["data"]["status"].append({})
+            jsontext["data"]["status"][i]["label"] = self.outfits_sub_weapon_shortname + "_弾数"
+            jsontext["data"]["status"][i]["value"] = sws_ammo[1]
+            jsontext["data"]["status"][i]["max"] = sws_ammo[1]
+            i = i + 1
+
+        if "/" in self.outfits_main_weapon_longstrong:
+            mwl_ammo = self.outfits_main_weapon_longstrong.split("/")
+            jsontext["data"]["status"].append({})
+            jsontext["data"]["status"][i]["label"] = self.outfits_main_weapon_longname + "_弾数"
+            jsontext["data"]["status"][i]["value"] = mwl_ammo[1]
+            jsontext["data"]["status"][i]["max"] = mwl_ammo[1]
+            i = i + 1
+
+        if "/" in self.outfits_sub_weapon_longstrong:
+            swl_ammo = self.outfits_sub_weapon_longstrong.split("/")
+            jsontext["data"]["status"].append({})
+            jsontext["data"]["status"][i]["label"] = self.outfits_sub_weapon_longname + "_弾数"
+            jsontext["data"]["status"][i]["value"] = swl_ammo[1]
+            jsontext["data"]["status"][i]["max"] = swl_ammo[1]
             i = i + 1
 
         jsontext["data"]["params"] = []
