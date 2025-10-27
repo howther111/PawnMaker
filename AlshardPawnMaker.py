@@ -89,7 +89,7 @@ class GuardianData():
         self.url = input_url
         self.character_name = driver.find_element(by=By.ID, value="base.name").get_attribute("value")
         self.level = driver.find_element(by=By.ID, value="base.level").get_attribute("value")
-        self.player_name = driver.find_element(by=By.ID, value="base.player").get_attribute("value")
+        self.playera_name = driver.find_element(by=By.ID, value="base.player").get_attribute("value")
         self.strong_total = driver.find_element(by=By.ID, value="abl.strong.total").get_attribute("value")
         self.strong_bonus = driver.find_element(by=By.ID, value="abl.strong.bonus").get_attribute("value")
         self.reflex_total = driver.find_element(by=By.ID, value="abl.reflex.total").get_attribute("value")
@@ -542,7 +542,8 @@ class GuardianData():
         command = command + "\n//アイテム"
         for i in range(len(self.items)):
             if not self.items[i] == "":
-                command = command + "\nアイテム名:" + self.items[i].replace("\n", "") + "/効果:" + self.items_effect[i].replace("\n", "")
+                itemstr = self.items[i].split("*")
+                command = command + "\nアイテム名:" + itemstr[0].replace("\n", "") + "/効果:" + self.items_effect[i].replace("\n", "")
 
         jsontext["data"]["commands"] = command
         jsontext["data"]["externalUrl"] = self.url

@@ -581,7 +581,9 @@ class GuardianData():
         command = command + "\n//アイテム"
         for i in range(len(self.items)):
             if not self.items[i] == "":
-                command = command + "\nアイテム名:" + self.items[i].replace("\n", "") + "/効果:" + self.items_effect[i].replace("\n", "")
+                itemstr = self.items[i].split("*")
+                command = command + "\nアイテム名:" + itemstr[0].replace("\n", "") + "/効果:" + self.items_effect[
+                    i].replace("\n", "")
 
         jsontext["data"]["commands"] = command
         jsontext["data"]["externalUrl"] = self.url
