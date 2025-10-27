@@ -89,7 +89,7 @@ class GuardianData():
         self.url = input_url
         self.character_name = driver.find_element(by=By.ID, value="base.name").get_attribute("value")
         self.level = driver.find_element(by=By.ID, value="base.level").get_attribute("value")
-        self.playera_name = driver.find_element(by=By.ID, value="base.player").get_attribute("value")
+        self.player_name = driver.find_element(by=By.ID, value="base.player").get_attribute("value")
         self.strong_total = driver.find_element(by=By.ID, value="abl.strong.total").get_attribute("value")
         self.strong_bonus = driver.find_element(by=By.ID, value="abl.strong.bonus").get_attribute("value")
         self.reflex_total = driver.find_element(by=By.ID, value="abl.reflex.total").get_attribute("value")
