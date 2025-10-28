@@ -321,13 +321,13 @@ class GuardianData():
 
         print(text)
 
-        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_キャラクターテキストデータ.txt"
+        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_クエスターテキストデータ.txt"
 
         f = open(file_name, 'w', encoding="utf-8")
         f.write(text)
         f.close()
 
-        print("キャラクターテキストデータを生成しました")
+        print("クエスターテキストデータを生成しました")
         self.output_porn(text)
 
     def output_porn(self, text_data):
@@ -547,12 +547,12 @@ class GuardianData():
 
         jsontext["data"]["commands"] = command
         jsontext["data"]["externalUrl"] = self.url
-        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_キャラクター駒データ.txt"
+        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_クエスター駒データ.txt"
 
         with open(file_name, 'w', encoding="utf-8") as file:  # 第二引数：writableオプションを指定
             json.dump(jsontext, file, ensure_ascii=False)
 
-        print("キャラクター駒データを生成しました")
+        print("クエスター駒データを生成しました")
 
 
 class CharacterData():

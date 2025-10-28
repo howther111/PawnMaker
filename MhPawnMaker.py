@@ -289,13 +289,13 @@ class HeroData():
         print(text)
 
         file_name = (self.character_name.replace("/", "_").replace("\"", "”") + "／" +
-                     self.hero_name.replace("/", "_").replace("\"", "”") + "_キャラクターテキストデータ.txt")
+                     self.hero_name.replace("/", "_").replace("\"", "”") + "_ヒーローテキストデータ.txt")
 
         f = open(file_name, 'w', encoding="utf-8")
         f.write(text)
         f.close()
 
-        print("キャラクターテキストデータを生成しました")
+        print("ヒーローテキストデータを生成しました")
         self.output_porn(text)
 
     def output_porn(self, text_data):
@@ -513,12 +513,12 @@ class HeroData():
         jsontext["data"]["commands"] = command
         jsontext["data"]["externalUrl"] = self.url
         file_name = (self.character_name.replace("/", "_").replace("\"", "”") + "／" +
-                     self.hero_name.replace("/", "_").replace("\"", "”") + "_キャラクター駒データ.txt")
+                     self.hero_name.replace("/", "_").replace("\"", "”") + "_ヒーロー駒データ.txt")
 
         with open(file_name, 'w', encoding="utf-8") as file:  # 第二引数：writableオプションを指定
             json.dump(jsontext, file, ensure_ascii=False)
 
-        print("キャラクター駒データを生成しました")
+        print("ヒーロー駒データを生成しました")
 
 
 class CharacterData():

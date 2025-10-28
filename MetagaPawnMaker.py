@@ -683,13 +683,13 @@ class CharacterData():
 
         print(text)
 
-        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_キャラクターテキストデータ.txt"
+        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_リンケージテキストデータ.txt"
 
         f = open(file_name, 'w', encoding="utf-8")
         f.write(text)
         f.close()
 
-        print("キャラクターテキストデータを生成しました")
+        print("リンケージテキストデータを生成しました")
         self.output_pawn(text)
         #tkinter.messagebox.showinfo(title="完了", message="駒データを生成しました")
 
@@ -775,12 +775,12 @@ class CharacterData():
         jsontext["data"]["externalUrl"] = self.url
         jsontext["data"]["commands"] = "//能力値判定\nMG+{体力B}  体力判定\nMG+{反射B}  反射判定\nMG+{知覚B}  " \
                                        "知覚判定\nMG+{理知B}  理知判定\nMG+{意志B}  意志判定\nMG+{幸運B}  幸運判定"
-        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_キャラクター駒データ.txt"
+        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_リンケージ駒データ.txt"
 
         with open(file_name, 'w', encoding="utf-8") as file:  # 第二引数：writableオプションを指定
             json.dump(jsontext, file, ensure_ascii=False)
 
-        print("キャラクター駒データを生成しました")
+        print("リンケージ駒データを生成しました")
 
 
 def get_data(value):
