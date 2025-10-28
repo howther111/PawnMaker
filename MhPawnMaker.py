@@ -82,6 +82,8 @@ class HeroData():
     skill_range = []
     skill_cost = []
     skill_memo = []
+    class_name = []
+    class_level = []
 
     break_flg = 0
 
@@ -238,6 +240,20 @@ class HeroData():
             except:
                 break
 
+        classnamestr = "classes.0.name"
+        classlevelstr = "classes.0.name"
+        self.class_name.append(driver.find_element(by=By.ID, value=classnamestr).get_attribute("value"))
+        self.class_level.append(driver.find_element(by=By.ID, value=classlevelstr).get_attribute("value"))
+        for i in range(98):
+            try:
+                classnum = i + 1
+                classnamestr = "classes." + str(classnum).zfill(3) + ".name"
+                classlevelstr = "classes." + str(classnum).zfill(3) + ".level"
+                self.class_name.append(driver.find_element(by=By.ID, value=classnamestr).get_attribute("value"))
+                self.class_level.append(driver.find_element(by=By.ID, value=classlevelstr).get_attribute("value"))
+            except:
+                break
+
         print(self.character_name)
 
     def output_text(self):
@@ -308,37 +324,37 @@ class HeroData():
         jsontext["data"]["initiative"] = int(self.outfits_total_action)
         jsontext["data"]["status"] = []
 
-        jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][0]["label"] = "レベル"
-        jsontext["data"]["status"][0]["value"] = self.level
-        jsontext["data"]["status"][0]["max"] = self.level
+        i = 0
 
         jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][1]["label"] = "FP"
-        jsontext["data"]["status"][1]["value"] = self.outfits_total_fp
-        jsontext["data"]["status"][1]["max"] = self.outfits_total_fp
+        jsontext["data"]["status"][i]["label"] = "FP"
+        jsontext["data"]["status"][i]["value"] = self.outfits_total_fp
+        jsontext["data"]["status"][i]["max"] = self.outfits_total_fp
+        i = i + 1
 
         jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][2]["label"] = "HP"
-        jsontext["data"]["status"][2]["value"] = self.outfits_total_hp
-        jsontext["data"]["status"][2]["max"] = self.outfits_total_hp
+        jsontext["data"]["status"][i]["label"] = "HP"
+        jsontext["data"]["status"][i]["value"] = self.outfits_total_hp
+        jsontext["data"]["status"][i]["max"] = self.outfits_total_hp
+        i = i + 1
 
         jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][3]["label"] = "MP"
-        jsontext["data"]["status"][3]["value"] = self.outfits_total_mp
-        jsontext["data"]["status"][3]["max"] = self.outfits_total_mp
+        jsontext["data"]["status"][i]["label"] = "MP"
+        jsontext["data"]["status"][i]["value"] = self.outfits_total_mp
+        jsontext["data"]["status"][i]["max"] = self.outfits_total_mp
+        i = i + 1
 
         jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][4]["label"] = "財産ポイント"
-        jsontext["data"]["status"][4]["value"] = self.add_fortune_point
-        jsontext["data"]["status"][4]["max"] = self.add_fortune_point
+        jsontext["data"]["status"][i]["label"] = "財産ポイント"
+        jsontext["data"]["status"][i]["value"] = self.add_fortune_point
+        jsontext["data"]["status"][i]["max"] = self.add_fortune_point
+        i = i + 1
 
         jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][5]["label"] = "ブレイク"
-        jsontext["data"]["status"][5]["value"] = 1
-        jsontext["data"]["status"][5]["max"] = 1
-
-        i = 6
+        jsontext["data"]["status"][i]["label"] = "ブレイク"
+        jsontext["data"]["status"][i]["value"] = 1
+        jsontext["data"]["status"][i]["max"] = 1
+        i = i + 1
 
         for special in self.specials:
             jsontext["data"]["status"].append({})
@@ -467,6 +483,18 @@ class HeroData():
         jsontext["data"]["params"].append({})
         jsontext["data"]["params"][25]["label"] = "闇防御"
         jsontext["data"]["params"][25]["value"] = self.armourstotal_dark
+
+        j = 26
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "キャラクターレベル"
+        jsontext["data"]["params"][j]["value"] = self.level
+        j = j + 1
+
+        for l in range(len(self.class_name)):
+            jsontext["data"]["params"].append({})
+            jsontext["data"]["params"][j]["label"] = self.class_name[l] + "クラスレベル"
+            jsontext["data"]["params"][j]["value"] = self.class_level[l]
+            j = j + 1
 
         outfits_main_weapon_shortattack_array = self.outfits_main_weapon_shortattack.split("+")
         outfits_sub_weapon_shortattack_array = self.outfits_sub_weapon_shortattack.split("+")
