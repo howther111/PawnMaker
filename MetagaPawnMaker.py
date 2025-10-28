@@ -269,7 +269,7 @@ class GuardianData():
                 break
 
         classnamestr = "classes.0.name"
-        classlevelstr = "classes.0.name"
+        classlevelstr = "classes.0.level"
         self.class_name.append(driver.find_element(by=By.ID, value=classnamestr).get_attribute("value"))
         self.class_level.append(driver.find_element(by=By.ID, value=classlevelstr).get_attribute("value"))
         for i in range(98):
