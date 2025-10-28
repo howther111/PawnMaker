@@ -551,7 +551,7 @@ class GuardianData():
         jsontext["data"]["params"][25]["label"] = "闇防御"
         jsontext["data"]["params"][25]["value"] = self.armourstotal_dark
 
-        j = 25
+        j = 26
         jsontext["data"]["params"].append({})
         jsontext["data"]["params"][j]["label"] = "キャラクターレベル"
         jsontext["data"]["params"][j]["value"] = self.level
