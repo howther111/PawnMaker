@@ -496,6 +496,11 @@ class HeroData():
             jsontext["data"]["params"][j]["value"] = self.class_level[l]
             j = j + 1
 
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "状態"
+        jsontext["data"]["params"][j]["value"] = "通常"
+        j = j + 1
+
         outfits_main_weapon_shortattack_array = self.outfits_main_weapon_shortattack.split("+")
         outfits_sub_weapon_shortattack_array = self.outfits_sub_weapon_shortattack.split("+")
 
