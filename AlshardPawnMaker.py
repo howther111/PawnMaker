@@ -526,7 +526,7 @@ class GuardianData():
 
         jsontext["data"]["params"].append({})
         jsontext["data"]["params"][j]["label"] = "状態"
-        jsontext["data"]["params"][j]["value"] = "通常"
+        jsontext["data"]["params"][j]["value"] = ""
         j = j + 1
 
         outfits_rightattack_array = self.outfits_rightattack.split("+")
