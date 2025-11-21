@@ -506,7 +506,7 @@ class GuardianData():
         jsontext["data"]["secret"] = "false"
         jsontext["data"]["invisible"] = "false"
         jsontext["data"]["hideStatus"] = "false"
-        command = "//アクション\nムーブ:\nマイナー:\nメジャー:\n//リソース\n" + \
+        command = "//アクション\nムーブ:\nマイナー:\nメジャー:\n\n//リソース\n" + \
                                        "C({HP}-YY)　残りHP\n" + \
                                        "C({MP}-YY)　残りMP\n\n" + \
                                        "//防御、+0欄に修正を記入\nAL+{回避値}+0　近・回避\n" \
@@ -526,7 +526,7 @@ class GuardianData():
                                        self.outfits_magicleftname + "ダメージ\n" \
                                        "\n//能力値判定\nAL+{体力B}  体力判定\nAL+{反射B}  反射判定\nAL+{知覚B}  " \
                                        "知覚判定\nAL+{理知B}  理知判定\nAL+{意志B}  意志判定\nAL+{幸運B}  幸運判定"
-        command = command + "\n//特技"
+        command = command + "\n\n//特技"
         for i in range(len(self.skill_memo)):
             if not self.skill_name[i] == "":
                 command = command + "\n特技名:" + self.skill_name[i].replace("\n", "") + "/クラス:" + self.skill_class[i] + \
@@ -534,14 +534,14 @@ class GuardianData():
                           self.skill_timing[i] + "/対象:" + self.skill_target[i] + "/射程:" + self.skill_range[i] + \
                           "/代償:" +  self.skill_cost[i] + "/備考:" + self.skill_memo[i].replace("\n", "")
 
-        command = command + "\n//加護"
+        command = command + "\n\n//加護"
         for i in range(len(self.specials)):
             if not self.specials[i] == "":
                 command = command + "\n加護名:" + self.specials[i].replace("\n", "") + "/効果:" + self.specials_effect[i].replace("\n", "")
 
-        command = command + "\n//アイテム"
+        command = command + "\n\n//アイテム"
         for i in range(len(self.items)):
-            if (not self.items[i] == "") and (not self.items_effect[i] == "特技"):
+            if (not self.items[i] == "") and (not self.items_effect[i] == "特技") and (not self.items_effect[i] == "非アイテム"):
                 itemstr = self.items[i].split("*")
                 command = command + "\nアイテム名:" + itemstr[0].replace("\n", "") + "/効果:" + self.items_effect[i].replace("\n", "")
 

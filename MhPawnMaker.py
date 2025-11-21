@@ -475,7 +475,7 @@ class HeroData():
         jsontext["data"]["secret"] = "false"
         jsontext["data"]["invisible"] = "false"
         jsontext["data"]["hideStatus"] = "false"
-        command = "//アクション\nムーブ:\nマイナー:\nメジャー:\n//リソース\n" + \
+        command = "//アクション\nムーブ:\nマイナー:\nメジャー:\n\n//リソース\n" + \
                                        "C({FP}-YY)　残りFP\n" + \
                                        "C({HP}-YY)　残りHP\n" + \
                                        "C({MP}-YY)　残りMP\n\n" + \
@@ -490,7 +490,7 @@ class HeroData():
                                        self.outfits_sub_weapon_shortname + "ダメージ\n" \
                                        "\n//能力値判定\n2d6+{体力B}  体力判定\n2d6+{反射B}  反射判定\n2d6+{知覚B}  " \
                                        "知覚判定\n2d6+{理知B}  理知判定\n2d6+{意志B}  意志判定\n2d6+{幸運B}  幸運判定"
-        command = command + "\n//特技"
+        command = command + "\n\n//特技"
         for i in range(len(self.skill_memo)):
             if not self.skill_name[i] == "":
                 command = command + "\n特技名:" + self.skill_name[i].replace("\n", "") + "/クラス:" + self.skill_class[i] + \
@@ -501,11 +501,11 @@ class HeroData():
         command = command + "\n//加護"
         for i in range(len(self.specials)):
             if not self.specials[i] == "":
-                command = command + "\n加護名:" + self.specials[i].replace("\n", "") + "/効果:" + self.specials_effect[i].replace("\n", "")
+                command = command + "\n\n加護名:" + self.specials[i].replace("\n", "") + "/効果:" + self.specials_effect[i].replace("\n", "")
 
-        command = command + "\n//アイテム"
+        command = command + "\n\n//アイテム"
         for i in range(len(self.items)):
-            if (not self.items[i] == "") and (not self.items_effect[i] == "特技"):
+            if (not self.items[i] == "") and (not self.items_effect[i] == "特技") and (not self.items_effect[i] == "非アイテム"):
                 itemstr = self.items[i].split("*")
                 command = command + "\nアイテム名:" + itemstr[0].replace("\n", "") + "/効果:" + self.items_effect[
                     i].replace("\n", "")
