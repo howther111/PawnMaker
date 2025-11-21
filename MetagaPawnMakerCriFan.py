@@ -631,7 +631,7 @@ class GuardianData():
 
         command = command + "\n\n//アイテム"
         for i in range(len(self.items)):
-            if not self.items[i] == "":
+            if (not self.items[i] == "") and (not self.items_effect[i] == "特技"):
                 itemstr = self.items[i].split("*")
                 command = command + "\nアイテム名:" + itemstr[0].replace("\n", "") + "/効果:" + self.items_effect[
                     i].replace("\n", "")

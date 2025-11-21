@@ -83,8 +83,6 @@ class GuardianData():
     skill_range = []
     skill_cost = []
     skill_memo = []
-    class_name = []
-    class_level = []
 
     break_flg = 0
 
@@ -265,20 +263,6 @@ class GuardianData():
 
                 skillmemostr = "skills." + str(skillnum).zfill(3) + ".memo"
                 self.skill_memo.append(driver.find_element(by=By.ID, value=skillmemostr).get_attribute("value"))
-            except:
-                break
-
-        classnamestr = "classes.0.name"
-        classlevelstr = "classes.0.level"
-        self.class_name.append(driver.find_element(by=By.ID, value=classnamestr).get_attribute("value"))
-        self.class_level.append(driver.find_element(by=By.ID, value=classlevelstr).get_attribute("value"))
-        for i in range(98):
-            try:
-                classnum = i + 1
-                classnamestr = "classes." + str(classnum).zfill(3) + ".name"
-                classlevelstr = "classes." + str(classnum).zfill(3) + ".level"
-                self.class_name.append(driver.find_element(by=By.ID, value=classnamestr).get_attribute("value"))
-                self.class_level.append(driver.find_element(by=By.ID, value=classlevelstr).get_attribute("value"))
             except:
                 break
 
@@ -551,23 +535,6 @@ class GuardianData():
         jsontext["data"]["params"][25]["label"] = "闇防御"
         jsontext["data"]["params"][25]["value"] = self.armourstotal_dark
 
-        j = 26
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][j]["label"] = "キャラクターレベル"
-        jsontext["data"]["params"][j]["value"] = self.level
-        j = j + 1
-
-        for l in range(len(self.class_name)):
-            jsontext["data"]["params"].append({})
-            jsontext["data"]["params"][j]["label"] = self.class_name[l] + "クラスレベル"
-            jsontext["data"]["params"][j]["value"] = self.class_level[l]
-            j = j + 1
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][j]["label"] = "状態"
-        jsontext["data"]["params"][j]["value"] = ""
-        j = j + 1
-
         outfits_main_weapon_shortattack_array = self.outfits_main_weapon_shortattack.split("+")
         outfits_sub_weapon_shortattack_array = self.outfits_sub_weapon_shortattack.split("+")
         outfits_main_weapon_longattack_array = self.outfits_main_weapon_longattack.split("+")
@@ -613,7 +580,7 @@ class GuardianData():
 
         command = command + "\n//アイテム"
         for i in range(len(self.items)):
-            if not self.items[i] == "":
+            if (not self.items[i] == "") and (not self.items_effect[i] == "特技"):
                 itemstr = self.items[i].split("*")
                 command = command + "\nアイテム名:" + itemstr[0].replace("\n", "") + "/効果:" + self.items_effect[
                     i].replace("\n", "")
