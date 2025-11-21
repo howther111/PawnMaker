@@ -324,37 +324,37 @@ class HeroData():
         jsontext["data"]["initiative"] = int(self.outfits_total_action)
         jsontext["data"]["status"] = []
 
-        jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][0]["label"] = "レベル"
-        jsontext["data"]["status"][0]["value"] = self.level
-        jsontext["data"]["status"][0]["max"] = self.level
+        i = 0
 
         jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][1]["label"] = "FP"
-        jsontext["data"]["status"][1]["value"] = self.outfits_total_fp
-        jsontext["data"]["status"][1]["max"] = self.outfits_total_fp
+        jsontext["data"]["status"][i]["label"] = "FP"
+        jsontext["data"]["status"][i]["value"] = self.outfits_total_fp
+        jsontext["data"]["status"][i]["max"] = self.outfits_total_fp
+        i = i + 1
 
         jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][2]["label"] = "HP"
-        jsontext["data"]["status"][2]["value"] = self.outfits_total_hp
-        jsontext["data"]["status"][2]["max"] = self.outfits_total_hp
+        jsontext["data"]["status"][i]["label"] = "HP"
+        jsontext["data"]["status"][i]["value"] = self.outfits_total_hp
+        jsontext["data"]["status"][i]["max"] = self.outfits_total_hp
+        i = i + 1
 
         jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][3]["label"] = "MP"
-        jsontext["data"]["status"][3]["value"] = self.outfits_total_mp
-        jsontext["data"]["status"][3]["max"] = self.outfits_total_mp
+        jsontext["data"]["status"][i]["label"] = "MP"
+        jsontext["data"]["status"][i]["value"] = self.outfits_total_mp
+        jsontext["data"]["status"][i]["max"] = self.outfits_total_mp
+        i = i + 1
 
         jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][4]["label"] = "財産ポイント"
-        jsontext["data"]["status"][4]["value"] = self.add_fortune_point
-        jsontext["data"]["status"][4]["max"] = self.add_fortune_point
+        jsontext["data"]["status"][i]["label"] = "財産ポイント"
+        jsontext["data"]["status"][i]["value"] = self.add_fortune_point
+        jsontext["data"]["status"][i]["max"] = self.add_fortune_point
+        i = i + 1
 
         jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][5]["label"] = "ブレイク"
-        jsontext["data"]["status"][5]["value"] = 1
-        jsontext["data"]["status"][5]["max"] = 1
-
-        i = 6
+        jsontext["data"]["status"][i]["label"] = "ブレイク"
+        jsontext["data"]["status"][i]["value"] = 1
+        jsontext["data"]["status"][i]["max"] = 1
+        i = i + 1
 
         for special in self.specials:
             jsontext["data"]["status"].append({})
@@ -554,7 +554,7 @@ class HeroData():
 
         command = command + "\n\n//アイテム"
         for i in range(len(self.items)):
-            if (not self.items[i] == "") and (not self.items_effect[i] == "特技") and (not self.items_effect[i] == "非アイテム"):
+            if (not self.items[i] == "") or (not self.items_effect[i] == "特技") or (not self.items_effect[i] == "非アイテム"):
                 itemstr = self.items[i].split("*")
                 command = command + "\nアイテム名:" + itemstr[0].replace("\n", "") + "/効果:" + self.items_effect[
                     i].replace("\n", "")
