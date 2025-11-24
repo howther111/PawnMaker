@@ -154,7 +154,7 @@ class HeroData():
         self.outfits_total_battlespeed_total = driver.find_element(by=By.ID, value="outfits.total.battlespeed.total").get_attribute("value")
         self.outfits_total_battlespeed_total = self.outfits_total_battlespeed_total.replace("ﾏｽ", "")
 
-        self.add_fortune_point = driver.find_element(by=By.ID, value="fortunepoint").get_attribute("value")
+        self.add_fortune_point = driver.find_element(by=By.ID, value="addfortunepoint").get_attribute("value")
 
         self.outfits_main_weapon_shortname = driver.find_element(by=By.ID, value="outfits.total.main_weapon_shortname").get_attribute("value")
         self.outfits_main_weapon_shortattack = driver.find_element(by=By.ID, value="outfits.total.main_weapon_shortattack").get_attribute("value")
