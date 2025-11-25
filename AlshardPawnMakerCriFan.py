@@ -393,17 +393,19 @@ class GuardianData():
         for item in self.items:
             itemnum = item.split("*")
             if len(itemnum) > 1:
-                jsontext["data"]["status"].append({})
-                jsontext["data"]["status"][i]["label"] = itemnum[0]
-                jsontext["data"]["status"][i]["value"] = itemnum[1]
-                jsontext["data"]["status"][i]["max"] = itemnum[1]
+                if not ("非表示" in item or "非消費" in item):
+                    jsontext["data"]["status"].append({})
+                    jsontext["data"]["status"][i]["label"] = itemnum[0]
+                    jsontext["data"]["status"][i]["value"] = itemnum[1]
+                    jsontext["data"]["status"][i]["max"] = itemnum[1]
+                    i = i + 1
             else:
-                jsontext["data"]["status"].append({})
-                jsontext["data"]["status"][i]["label"] = item
-                jsontext["data"]["status"][i]["value"] = 1
-                jsontext["data"]["status"][i]["max"] = 1
-
-            i = i + 1
+                if not ("非表示" in item or "非消費" in item):
+                    jsontext["data"]["status"].append({})
+                    jsontext["data"]["status"][i]["label"] = item
+                    jsontext["data"]["status"][i]["value"] = 1
+                    jsontext["data"]["status"][i]["max"] = 1
+                    i = i + 1
 
         jsontext["data"]["status"].append({})
         jsontext["data"]["status"][i]["label"] = "クリティカル値"
@@ -591,7 +593,8 @@ class GuardianData():
 
         command = command + "\n\n//アイテム"
         for i in range(len(self.items)):
-            if not (self.items[i] == "" or self.items_effect[i] == "特技" or self.items_effect[i] == "非アイテム"):
+            if not (self.items[i] == "" or self.items_effect[i] == "特技" or "非アイテム" in self.items_effect[i]
+            or "特技" in self.items[i] or "非アイテム" in self.items[i] or "非表示" in self.items[i]):
                 itemstr = self.items[i].split("*")
                 command = command + "\nアイテム名:" + itemstr[0].replace("\n", "") + "/効果:" + self.items_effect[i].replace("\n", "")
 
