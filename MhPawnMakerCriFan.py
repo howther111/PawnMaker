@@ -554,7 +554,7 @@ class HeroData():
 
         command = command + "\n\n//アイテム"
         for i in range(len(self.items)):
-            if (not self.items[i] == "") or (not self.items_effect[i] == "特技") or (not self.items_effect[i] == "非アイテム"):
+            if not (self.items[i] == "" or self.items_effect[i] == "特技" or self.items_effect[i] == "非アイテム"):
                 itemstr = self.items[i].split("*")
                 command = command + "\nアイテム名:" + itemstr[0].replace("\n", "") + "/効果:" + self.items_effect[
                     i].replace("\n", "")
