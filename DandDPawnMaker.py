@@ -10,6 +10,261 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 import json
 
+
+def get_saving_throws(driver, timeout: int = 10) -> dict[str, dict]:
+    """
+    戻り値例:
+    {
+      "【筋力】": {"save": "0", "ability_mod": "0", "other": "", "prof_bonus": "", "proficient": False},
+      ...
+    }
+    """
+    wait = WebDriverWait(driver, timeout)
+
+    # 「セーヴ」「能力修正」などのヘッダを持つテーブル（= セーヴ表）を特定
+    table_xpath = (
+        "//table[.//tr[contains(@class,'SBC')]"
+        " and .//td[contains(., 'セーヴ')]"
+        " and .//td[contains(., '能力修正')]]"
+    )
+    table = wait.until(EC.presence_of_element_located((By.XPATH, table_xpath)))
+
+    saves = {}
+    rows = table.find_elements(By.XPATH, ".//tr[contains(@class,'MWC')]")
+
+    for r in rows:
+        tds = r.find_elements(By.XPATH, "./td")
+        if len(tds) < 6:
+            continue
+
+        ability = tds[0].text.strip()  # 例: "【筋力】"
+
+        # セーヴ値（太字の DIV.A > B が入っている）
+        save_val = tds[1].find_element(By.XPATH, ".//div[contains(@class,'A')]/b").text.strip()
+
+        # 能力修正（DIV.D）
+        ability_mod = tds[2].text.strip()
+
+        other = tds[3].text.strip()
+        prof_bonus = tds[4].text.strip()
+
+        # 習熟チェック（□ が入ってる列。チェック記号が別表現ならここだけ調整）
+        proficient = ("■" in tds[5].text)  # 通常は未チェックだと "□"
+
+        saves[ability] = {
+            "save": save_val,
+            "ability_mod": ability_mod,
+            "other": other,
+            "prof_bonus": prof_bonus,
+            "proficient": proficient,
+        }
+
+    return saves
+
+def get_save_value(driver, ability_jp: str, timeout: int = 10) -> str:
+    """
+    ability_jp 例: "【筋力】" "【敏捷力】" "【判断力】" など
+    """
+    wait = WebDriverWait(driver, timeout)
+
+    xpath = (
+        "//table[.//tr[contains(@class,'SBC')] and .//td[contains(., 'セーヴ')] and .//td[contains(., '能力修正')]]"
+        f"//tr[contains(@class,'MWC')][td[1][contains(., '{ability_jp}')]]"
+        "/td[2]//div[contains(@class,'A')]/b"
+    )
+    el = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
+    return el.text.strip()
+
+
+def get_attacks(driver) -> list[dict]:
+    """
+    戻り値例:
+    [
+      {"attack": "ロングソード", "attack_bonus": "+7", "damage": "1d8+4", "type": "斬撃", "note": "..."},
+      ...
+    ]
+    空行（全部空白）は除外します。
+    """
+    attacks = []
+
+    # 「攻撃」テーブル（summary='攻撃'）のうち、tdが6個ある行だけを対象にする
+    #  (攻撃列は colspan=2 なので td 数は 2+1+1+1+1 = 6)
+    rows = driver.find_elements(
+        By.XPATH,
+        "//table[@summary='攻撃']//tr[count(td)=6]"
+    )
+
+    for r in rows:
+        tds = r.find_elements(By.XPATH, "./td")
+
+        # 攻撃名（colspan=2のセル）
+        attack_name = tds[0].text.strip()
+
+        attack_bonus = tds[1].text.strip()
+        damage = tds[2].text.strip()
+        dmg_type = tds[3].text.strip()
+        note = tds[4].text.strip()
+
+        # 空行（全部空）を除外
+        if not any([attack_name, attack_bonus, damage, dmg_type, note]):
+            continue
+
+        attacks.append({
+            "attack": attack_name,
+            "attack_bonus": attack_bonus,
+            "damage": damage,
+            "type": dmg_type,
+            "note": note,
+        })
+
+    return attacks
+
+
+def get_coin_total_weight(driver, timeout: int = 10) -> str:
+    wait = WebDriverWait(driver, timeout)
+
+    xpath = (
+        "//table[@summary='硬貨']"
+        "//tr[td[contains(., '貨幣総重量')]]"
+        "/td[2]//div[contains(@class,'C')]"
+    )
+
+    el = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
+    return el.text.strip()  # "3"
+
+
+def get_coins(driver) -> dict[str, str]:
+    return {
+        "PP": get_coin_value(driver, "プラチナム貨"),
+        "GP": get_coin_value(driver, "金貨"),
+        "EP": get_coin_value(driver, "エレクトラム貨"),
+        "SP": get_coin_value(driver, "銀貨"),
+        "CP": get_coin_value(driver, "銅貨"),
+    }
+
+
+def get_coin_value(driver, label: str, timeout: int = 10) -> str:
+    """
+    label例:
+      "プラチナム貨(PP)"
+      "金貨(GP)"
+      "エレクトラム貨(EP)"
+      "銀貨(SP)"
+      "銅貨(CP)"
+    """
+    wait = WebDriverWait(driver, timeout)
+
+    xpath = (
+        "//table[@summary='硬貨']"
+        f"//tr[td[contains(., '{label}')]]"
+        "/td[2]//div[contains(@class,'C')]"
+    )
+
+    el = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
+    return el.text.strip()
+
+
+def get_max_hp(driver, timeout: int = 10) -> str:
+    wait = WebDriverWait(driver, timeout)
+
+    xpath = (
+        "//table[.//td[contains(., '最大HP')]]"
+        "//div[contains(@class,'A')]/b"
+    )
+    el = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
+    return el.text.strip()
+
+
+def get_inspiration(driver, timeout: int = 10) -> str:
+    wait = WebDriverWait(driver, timeout)
+
+    xpath = (
+        "//td[contains(., 'インスピレーション')]"
+        "/following-sibling::td"
+        "//div[contains(@class,'A')]/b"
+    )
+    el = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
+    return el.text.strip()
+
+
+def get_proficiency_bonus(driver, timeout: int = 10) -> str:
+    wait = WebDriverWait(driver, timeout)
+
+    xpath = (
+        "//td[contains(., '習熟ボーナス')]"
+        "/following-sibling::td"
+        "//div[contains(@class,'A')]/b"
+    )
+    el = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
+    return el.text.strip()
+
+
+def get_ac(driver, timeout: int = 10) -> str:
+    wait = WebDriverWait(driver, timeout)
+
+    xpath = (
+        "//table[@summary='ＡＣ']"
+        "//div[contains(@class,'A')]/b"
+    )
+    el = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
+    return el.text.strip()
+
+
+def get_speed(driver, timeout: int = 10) -> str:
+    wait = WebDriverWait(driver, timeout)
+
+    xpath = (
+        "//table[@summary='スピード']"
+        "//div[contains(@class,'A')]/b"
+    )
+    el = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
+    return el.text.strip()
+
+
+def get_initiative(driver, timeout: int = 10) -> str:
+    wait = WebDriverWait(driver, timeout)
+
+    xpath = (
+        "//table[@summary='イニシアチブ']"
+        "//div[contains(@class,'A')]/b"
+    )
+    el = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
+    return el.text.strip()
+
+
+def get_passive_perception(driver, timeout: int = 10) -> str:
+    wait = WebDriverWait(driver, timeout)
+
+    xpath = (
+        "//table[@summary='技能']"
+        "//tr[td[contains(., '受動') and contains(., '知覚')]]"
+        "//div[contains(@class,'A')]/b"
+    )
+
+    el = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
+    return el.text.strip()
+
+
+def get_skill_value(driver, skill_jp: str, timeout: int = 10) -> str:
+    """
+    skill_jp 例: "医術" / "運動" / "手先の早業" など（山括弧は不要）
+    戻り値: 技能値（例 "15"）。見つからなければ例外。
+    """
+    wait = WebDriverWait(driver, timeout)
+
+    xpath = (
+        "//table[@summary='技能']"
+        f"//tr[td[contains(., '〈{skill_jp}〉')]]"
+        "/td[1]//div[contains(@class,'A')]/b"
+    )
+    el = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
+    return el.text.strip()
+
+
+def get_skill_values(driver, skills: list[str]) -> dict[str, str]:
+    return {s: get_skill_value(driver, s) for s in skills}
+
+
 def get_field_by_label(driver, label: str, timeout: int = 10) -> str:
     """
     例: label="キャラクター名", "属性", "プレイヤー名", "クラス", "レベル", "種族" など
@@ -25,6 +280,63 @@ def get_field_by_label(driver, label: str, timeout: int = 10) -> str:
     return el.text.strip()
 
 
+def get_abilities(driver) -> dict:
+    abilities = {}
+    rows = driver.find_elements(
+        By.XPATH,
+        "//table[@summary='能力値コメント']//tr[contains(@class,'MWC')]"
+    )
+    for r in rows:
+        tds = r.find_elements(By.XPATH, "./td")
+        if len(tds) < 3:
+            continue
+
+        score = tds[0].text.strip()                 # 11
+        label = tds[1].text.strip()                 # 【筋力】 STR
+        mod = tds[2].text.strip()                   # +2 等（空の場合あり）
+
+        # STR / DEX ... を抽出（行末にある想定）
+        # 例: "【筋力】\nSTR" → "STR"
+        abbr = label.split()[-1].strip()
+        abilities[abbr] = {"score": score, "mod": mod}
+    return abilities
+
+
+def get_skills(driver) -> list[dict]:
+    skills = []
+    rows = driver.find_elements(
+        By.XPATH,
+        "//table[@summary='技能']//tr[td]"  # tdを持つ行
+    )
+
+    for r in rows:
+        tds = r.find_elements(By.XPATH, "./td")
+        if len(tds) != 5:
+            continue
+
+        value = tds[0].text.strip()  # 技能値
+        name_block = tds[1].text.strip()  # 〈医術〉\nMEDICINE
+        ability = tds[2].text.strip()     # 【判】5
+        prof = tds[3].text.strip()        # 4 レ など
+        other = tds[4].text.strip()       # その他
+
+        # 技能名(和)と英名を分割
+        parts = name_block.splitlines()
+        name_jp = parts[0].strip() if parts else ""
+        name_en = parts[1].strip() if len(parts) > 1 else ""
+
+        skills.append({
+            "name_jp": name_jp,
+            "name_en": name_en,
+            "value": value,
+            "ability": ability,
+            "proficiency": prof,
+            "other": other,
+        })
+
+    return skills
+
+
 class Weapon:
     name = ""
     bonus = 0
@@ -32,14 +344,17 @@ class Weapon:
     element = ""
     comment = ""
 
+
 class Item:
     name = ""
     weight = 0
     number = 0
 
+
 class Magic:
     name = ""
     level = 0
+
 
 class GuardianData:
     character_name = ""
@@ -97,22 +412,22 @@ class GuardianData:
 
     initiative = 0
     ac = 0
-    move = ""
+    speed = ""
     hp = 0
     death_save_success = 0
     death_save_fail = 0
     death_save_success_max = 3
     death_save_fail_max = 3
 
-    inspiratin = 0
-    use_bonus = 0
+    inspiration = 0
+    proficiency = 0
 
     pp = 0
     gp = 0
     ep = 0
     sp = 0
     cp = 0
-    p_sum = 0
+    coin_weight = 0
 
     url = ""
 
@@ -131,257 +446,98 @@ class GuardianData:
         self.character_height = get_field_by_label(driver, "身長")
         self.character_weight = get_field_by_label(driver, "体重")
         self.player_name = get_field_by_label(driver, "プレイヤー名")
-        self.strong_total = driver.find_element(by=By.ID, value="abl.strong.total").get_attribute("value")
-        self.strong_bonus = driver.find_element(by=By.ID, value="abl.strong.bonus").get_attribute("value")
-        self.reflex_total = driver.find_element(by=By.ID, value="abl.reflex.total").get_attribute("value")
-        self.reflex_bonus = driver.find_element(by=By.ID, value="abl.reflex.bonus").get_attribute("value")
-        self.sense_total = driver.find_element(by=By.ID, value="abl.sense.total").get_attribute("value")
-        self.sense_bonus = driver.find_element(by=By.ID, value="abl.sense.bonus").get_attribute("value")
-        self.intellect_total = driver.find_element(by=By.ID, value="abl.intellect.total").get_attribute("value")
-        self.intellect_bonus = driver.find_element(by=By.ID, value="abl.intellect.bonus").get_attribute("value")
-        self.will_total = driver.find_element(by=By.ID, value="abl.will.total").get_attribute("value")
-        self.will_bonus = driver.find_element(by=By.ID, value="abl.will.bonus").get_attribute("value")
-        self.bllesing_total = driver.find_element(by=By.ID, value="abl.bllesing.total").get_attribute("value")
-        self.bllesing_bonus = driver.find_element(by=By.ID, value="abl.bllesing.bonus").get_attribute("value")
 
-        #self.specials_000 = driver.find_element(by=By.ID, value="specials.0.name").get_attribute("value")
-        self.specials.append(driver.find_element(by=By.ID, value="specials.0.name").get_attribute("value"))
+        abilities = get_abilities(driver)
 
-        for i in range(98):
-            try:
-                specialnum = i + 1
-                specialstr = "specials." + str(specialnum).zfill(3) + ".name"
-                self.specials.append(driver.find_element(by=By.ID, value=specialstr).get_attribute("value"))
-            except:
-                break
+        self.str_total = abilities["STR"]["score"]
+        self.str_bonus = abilities["STR"]["mod"]
+        self.dex_total = abilities["DEX"]["score"]
+        self.dex_bonus = abilities["DEX"]["mod"]
+        self.con_total = abilities["CON"]["score"]
+        self.con_bonus = abilities["CON"]["mod"]
+        self.int_total = abilities["INT"]["score"]
+        self.int_bonus = abilities["INT"]["mod"]
+        self.wis_total = abilities["WIS"]["score"]
+        self.wis_bonus = abilities["WIS"]["mod"]
+        self.cha_total = abilities["CHA"]["score"]
+        self.cha_bonus = abilities["CHA"]["mod"]
+        self.str_save = get_save_value(driver, "【筋力】")
+        self.dex_save = get_save_value(driver, "【敏捷力】")
+        self.con_save = get_save_value(driver, "【耐久力】")
+        self.int_save = get_save_value(driver, "【知力】")
+        self.wis_save = get_save_value(driver, "【判断力】")
+        self.cha_save = get_save_value(driver, "【魅力】")
 
-        self.specials_effect.append(driver.find_element(by=By.ID, value="specials.0.effect").get_attribute("value"))
+        # 取得したい技能（ご指定分）
+        skills_to_get = [
+            "威圧", "医術", "運動", "隠密", "軽業", "看破", "芸能", "自然", "宗教", "生存", "説得",
+            "捜査", "知覚", "手先の早業", "動物使い", "ペテン", "魔法学", "歴史",
+        ]
 
-        for i in range(98):
-            try:
-                specialnum = i + 1
-                specialstr = "specials." + str(specialnum).zfill(3) + ".effect"
-                self.specials_effect.append(driver.find_element(by=By.ID, value=specialstr).get_attribute("value"))
-            except:
-                break
+        skill_values = get_skill_values(driver, skills_to_get)
 
-        self.class_name.append(driver.find_element(by=By.ID, value="classes.0.name").get_attribute("value"))
-        self.class_level.append(driver.find_element(by=By.ID, value="classes.0.level").get_attribute("value"))
+        self.intimidation = skill_values["威圧"]
+        self.medicine = skill_values["医術"]
+        self.athletics = skill_values["運動"]
+        self.stealth = skill_values["隠密"]
+        self.acrobatics = skill_values["軽業"]
+        self.insight = skill_values["看破"]
+        self.performance = skill_values["芸能"]
+        self.nature = skill_values["自然"]
+        self.religion = skill_values["宗教"]
+        self.survival = skill_values["生存"]
+        self.persuasion = skill_values["説得"]
+        self.investigation = skill_values["捜査"]
+        self.perception = skill_values["知覚"]
+        self.sleight_of_hand = skill_values["手先の早業"]
+        self.animal_handling = skill_values["動物使い"]
+        self.deception = skill_values["ペテン"]
+        self.arcana = skill_values["魔法学"]
+        self.history = skill_values["歴史"]
 
-        for i in range(98):
-            try:
-                specialnum = i + 1
-                classnamestr = "classes." + str(specialnum).zfill(3) + ".name"
-                self.class_name.append(driver.find_element(by=By.ID, value=classnamestr).get_attribute("value"))
-                classlevelstr = "classes." + str(specialnum).zfill(3) + ".level"
-                self.class_level.append(driver.find_element(by=By.ID, value=classlevelstr).get_attribute("value"))
-            except:
-                break
+        self.passive = get_passive_perception(driver)
+        self.initiative = get_initiative(driver)
+        self.ac = get_ac(driver)
+        self.speed = get_speed(driver)
+        self.hp = get_max_hp(driver)
+        self.inspiration = get_inspiration(driver)
+        self.proficiency = get_proficiency_bonus(driver)
 
-        self.outfits_total_hit = driver.find_element(by=By.ID, value="outfits.total.hit").get_attribute("value")
-        self.outfits_total_dodge = driver.find_element(by=By.ID, value="outfits.total.dodge").get_attribute("value")
-        self.outfits_total_magic = driver.find_element(by=By.ID, value="outfits.total.magic").get_attribute("value")
-        self.outfits_total_countermagic = driver.find_element(by=By.ID, value="outfits.total.countermagic").get_attribute("value")
-        self.outfits_total_action = driver.find_element(by=By.ID, value="outfits.total.action").get_attribute("value")
-        self.outfits_total_hp = driver.find_element(by=By.ID, value="outfits.total.hp").get_attribute("value")
-        self.outfits_total_mp = driver.find_element(by=By.ID, value="outfits.total.mp").get_attribute("value")
-        self.outfits_total_action = driver.find_element(by=By.ID, value="outfits.total.action").get_attribute("value")
-        self.outfits_total_battlespeed_total = driver.find_element(by=By.ID, value="outfits.total.battlespeed.total").get_attribute("value")
-        self.outfits_total_battlespeed_total = self.outfits_total_battlespeed_total.replace("ﾏｽ", "")
+        coins = get_coins(driver)
+        self.pp = coins["PP"]
+        self.gp = coins["GP"]
+        self.ep = coins["EP"]
+        self.sp = coins["SP"]
+        self.cp = coins["CP"]
+        self.coin_weight = get_coin_total_weight(driver)
 
-        self.add_fortune_point = driver.find_element(by=By.ID, value="fortunepoint").get_attribute("value")
-
-        self.outfits_rightname = driver.find_element(by=By.ID, value="outfits.total.rightname").get_attribute("value")
-        self.outfits_rightattack = driver.find_element(by=By.ID, value="outfits.total.rightattack").get_attribute("value")
-        self.outfits_rightrange = driver.find_element(by=By.ID, value="outfits.total.rightrange").get_attribute("value")
-        self.outfits_rightstrong = driver.find_element(by=By.ID, value="outfits.right.0.cost").get_attribute("value")
-
-        self.outfits_leftname = driver.find_element(by=By.ID, value="outfits.total.leftname").get_attribute("value")
-        self.outfits_leftattack = driver.find_element(by=By.ID, value="outfits.total.leftattack").get_attribute("value")
-        self.outfits_leftrange = driver.find_element(by=By.ID, value="outfits.total.leftrange").get_attribute("value")
-        self.outfits_leftstrong = driver.find_element(by=By.ID, value="outfits.left.0.cost").get_attribute("value")
-
-        self.outfits_magicrightname = driver.find_element(by=By.ID,
-                                                                value="outfits.total.magicrightname").get_attribute(
-            "value")
-        self.outfits_magicrightattack = driver.find_element(by=By.ID,
-                                                                  value="outfits.total.magicrightattack").get_attribute(
-            "value")
-        self.outfits_magicrightrange = driver.find_element(by=By.ID,
-                                                                 value="outfits.total.magicrightrange").get_attribute(
-            "value")
-        self.outfits_magicrightstrong = driver.find_element(by=By.ID,
-                                                                  value="outfits.magicright.0.cost").get_attribute(
-            "value")
-
-        self.outfits_magicleftname = driver.find_element(by=By.ID,
-                                                               value="outfits.total.magicleftname").get_attribute(
-            "value")
-        self.outfits_magicleftattack = driver.find_element(by=By.ID,
-                                                                 value="outfits.total.magicleftattack").get_attribute(
-            "value")
-        self.outfits_magicleftrange = driver.find_element(by=By.ID,
-                                                                value="outfits.total.magicleftrange").get_attribute(
-            "value")
-        self.outfits_magicleftstrong = driver.find_element(by=By.ID,
-                                                                 value="outfits.magicleft.0.cost").get_attribute(
-            "value")
-
-        self.armourstotal_slash = driver.find_element(by=By.ID, value="armourstotal.slash").get_attribute("value")
-        self.armourstotal_pierce = driver.find_element(by=By.ID, value="armourstotal.pierce").get_attribute("value")
-        self.armourstotal_crash = driver.find_element(by=By.ID, value="armourstotal.crash").get_attribute("value")
-        self.armourstotal_fire = driver.find_element(by=By.ID, value="armourstotal.fire").get_attribute("value")
-        self.armourstotal_ice = driver.find_element(by=By.ID, value="armourstotal.ice").get_attribute("value")
-        self.armourstotal_thunder = driver.find_element(by=By.ID, value="armourstotal.thunder").get_attribute("value")
-        self.armourstotal_light = driver.find_element(by=By.ID, value="armourstotal.light").get_attribute("value")
-        self.armourstotal_dark = driver.find_element(by=By.ID, value="armourstotal.dark").get_attribute("value")
-
-        self.items.append(driver.find_element(by=By.ID, value="items.0.name").get_attribute("value"))
-
-        for i in range(98):
-            try:
-                itemnum = i + 1
-                itemstr = "items." + str(itemnum).zfill(3) + ".name"
-                self.items.append(driver.find_element(by=By.ID, value=itemstr).get_attribute("value"))
-            except:
-                break
-
-        self.items_effect.append(driver.find_element(by=By.ID, value="items.0.effect").get_attribute("value"))
-
-        for i in range(98):
-            try:
-                itemnum = i + 1
-                itemstr = "items." + str(itemnum).zfill(3) + ".effect"
-                self.items_effect.append(driver.find_element(by=By.ID, value=itemstr).get_attribute("value"))
-            except:
-                break
-
-        skillnamestr = "skills.0.name"
-        self.skill_name.append(driver.find_element(by=By.ID, value=skillnamestr).get_attribute("value"))
-
-        skillclassstr = "skills.0.class"
-        self.skill_class.append(driver.find_element(by=By.ID, value=skillclassstr).get_attribute("value"))
-
-        skilllevelstr = "skills.0.level"
-        self.skill_level.append(driver.find_element(by=By.ID, value=skilllevelstr).get_attribute("value"))
-
-        skilltypestr = "skills.0.type"
-        self.skill_type.append(driver.find_element(by=By.ID, value=skilltypestr).get_attribute("value"))
-
-        skilltimingstr = "skills.0.timing"
-        self.skill_timing.append(driver.find_element(by=By.ID, value=skilltimingstr).get_attribute("value"))
-
-        skilltargetstr = "skills.0.target"
-        self.skill_target.append(driver.find_element(by=By.ID, value=skilltargetstr).get_attribute("value"))
-
-        skillrangestr = "skills.0.range"
-        self.skill_range.append(driver.find_element(by=By.ID, value=skillrangestr).get_attribute("value"))
-
-        skillcoststr = "skills.0.cost"
-        self.skill_cost.append(driver.find_element(by=By.ID, value=skillcoststr).get_attribute("value"))
-
-        skillmemostr = "skills.0.memo"
-        self.skill_memo.append(driver.find_element(by=By.ID, value=skillmemostr).get_attribute("value"))
-
-        for i in range(998):
-            try:
-                skillnum = i + 1
-                skillnamestr = "skills." + str(skillnum).zfill(3) + ".name"
-                self.skill_name.append(driver.find_element(by=By.ID, value=skillnamestr).get_attribute("value"))
-
-                skillclassstr = "skills." + str(skillnum).zfill(3) + ".class"
-                self.skill_class.append(driver.find_element(by=By.ID, value=skillclassstr).get_attribute("value"))
-
-                skilllevelstr = "skills." + str(skillnum).zfill(3) + ".level"
-                self.skill_level.append(driver.find_element(by=By.ID, value=skilllevelstr).get_attribute("value"))
-
-                skilltypestr = "skills." + str(skillnum).zfill(3) + ".type"
-                self.skill_type.append(driver.find_element(by=By.ID, value=skilltypestr).get_attribute("value"))
-
-                skilltimingstr = "skills." + str(skillnum).zfill(3) + ".timing"
-                self.skill_timing.append(driver.find_element(by=By.ID, value=skilltimingstr).get_attribute("value"))
-
-                skilltargetstr = "skills." + str(skillnum).zfill(3) + ".target"
-                self.skill_target.append(driver.find_element(by=By.ID, value=skilltargetstr).get_attribute("value"))
-
-                skillrangestr = "skills." + str(skillnum).zfill(3) + ".range"
-                self.skill_range.append(driver.find_element(by=By.ID, value=skillrangestr).get_attribute("value"))
-
-                skillcoststr = "skills." + str(skillnum).zfill(3) + ".cost"
-                self.skill_cost.append(driver.find_element(by=By.ID, value=skillcoststr).get_attribute("value"))
-
-                skillmemostr = "skills." + str(skillnum).zfill(3) + ".memo"
-                self.skill_memo.append(driver.find_element(by=By.ID, value=skillmemostr).get_attribute("value"))
-            except:
-                break
+        self.weapon = get_attacks(driver)
 
         print(self.character_name)
 
     def output_text(self):
         # 駒のテキストデータを出力する
         text = "PC:" + self.character_name +  \
-                   " PL:" + self.player_name + "\n" + \
-                   "レベル:" + self.level
+                   "\nPL:" + self.player_name + \
+                   "\nレベル:" + self.character_level
 
-        text = text + "\n財産ポイント:" + self.add_fortune_point
-
-        text = text + "\n【命中】" + str(self.outfits_total_hit) + \
-                   "【回避】" + str(self.outfits_total_dodge) + \
-                   "【魔導】" + str(self.outfits_total_magic) + \
-                   "【抗魔】" + str(self.outfits_total_countermagic) + \
-                   "【行動】" + str(self.outfits_total_action) + \
-                   "\n【耐久】" + str(self.outfits_total_hp) + \
-                   "【精神】" + str(self.outfits_total_mp) + \
-                   "【移動力】" + str(self.outfits_total_battlespeed_total)
-
-        text = text + "\n加護:"
-        for special in self.specials:
-            text = text + special + "/"
-        text = text[:-1]
-
-        text = text + "\n[*]武右:" + self.outfits_rightname + \
-                " 射程:" + self.outfits_rightrange + \
-                " 代償:" + self.outfits_rightstrong + \
-                "\n攻撃力:" + self.outfits_rightattack
-
-        text = text + "\n[*]武左:" + self.outfits_leftname + \
-                " 射程:" + self.outfits_leftrange + \
-                " 代償:" + self.outfits_leftstrong + \
-                "\n攻撃力:" + self.outfits_leftattack
-
-        text = text + "\n[*]魔右:" + self.outfits_magicrightname + \
-                   " 射程:" + self.outfits_magicrightrange + \
-                   " 代償:" + self.outfits_magicrightstrong + \
-                   "\n攻撃力:" + self.outfits_magicrightattack
-
-        text = text + "\n[*]魔左:" + self.outfits_magicleftname + \
-                   " 射程:" + self.outfits_magicleftrange + \
-                   " 代償:" + self.outfits_magicleftstrong + \
-                   "\n攻撃力:" + self.outfits_magicleftattack
-
-        text = text + "\n防御力:斬" + self.armourstotal_slash + \
-                "/刺" + self.armourstotal_pierce + \
-                "/殴" + self.armourstotal_crash + \
-                "/炎" + self.armourstotal_fire + \
-                "/氷" + self.armourstotal_ice + \
-                "/雷" + self.armourstotal_thunder + \
-                "/光" + self.armourstotal_light + \
-                "/闇" + self.armourstotal_dark
-
-        #text = text + "\nアイテム:"
-        #for item in self.items:
-        #    text = text + item + "/"
-        #text = text[:-1]
+        text = text + "\nサイズ:" + str(self.character_size) + \
+                   "\n属性:" + str(self.character_element) + \
+                   "\n種族:" + str(self.character_race) + \
+                   "\n年齢:" + str(self.character_age) + \
+                   " 性別:" + str(self.character_sex) + \
+                   "\n身長:" + str(self.character_height) + \
+                   "\n体重:" + str(self.character_weight)
 
         print(text)
 
-        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_クエスターテキストデータ.txt"
+        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_冒険者テキストデータ.txt"
 
         f = open(file_name, 'w', encoding="utf-8")
         f.write(text)
         f.close()
 
-        print("クエスターテキストデータを生成しました")
+        print("冒険者テキストデータを生成しました")
         self.output_pawn(text)
 
     def output_pawn(self, text_data):
@@ -391,451 +547,284 @@ class GuardianData:
         jsontext["data"] = {}
         jsontext["data"]["name"] = self.character_name
         jsontext["data"]["memo"] = text_data
-        jsontext["data"]["initiative"] = int(self.outfits_total_action)
+        jsontext["data"]["initiative"] = int(self.initiative)
         jsontext["data"]["status"] = []
 
         i = 0
 
         jsontext["data"]["status"].append({})
         jsontext["data"]["status"][i]["label"] = "HP"
-        jsontext["data"]["status"][i]["value"] = self.outfits_total_hp
-        jsontext["data"]["status"][i]["max"] = self.outfits_total_hp
+        jsontext["data"]["status"][i]["value"] = self.hp
+        jsontext["data"]["status"][i]["max"] = self.hp
         i = i + 1
 
         jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][i]["label"] = "MP"
-        jsontext["data"]["status"][i]["value"] = self.outfits_total_mp
-        jsontext["data"]["status"][i]["max"] = self.outfits_total_mp
+        jsontext["data"]["status"][i]["label"] = "COINS_PP"
+        jsontext["data"]["status"][i]["value"] = self.pp
+        jsontext["data"]["status"][i]["max"] = 1000
         i = i + 1
 
         jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][i]["label"] = "財産ポイント"
-        jsontext["data"]["status"][i]["value"] = self.add_fortune_point
-        jsontext["data"]["status"][i]["max"] = self.add_fortune_point
+        jsontext["data"]["status"][i]["label"] = "COINS_GP"
+        jsontext["data"]["status"][i]["value"] = self.gp
+        jsontext["data"]["status"][i]["max"] = 1000
         i = i + 1
 
         jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][i]["label"] = "ブレイク"
-        jsontext["data"]["status"][i]["value"] = 1
-        jsontext["data"]["status"][i]["max"] = 1
-        i = i + 1
-
-        for special in self.specials:
-            jsontext["data"]["status"].append({})
-            jsontext["data"]["status"][i]["label"] = special
-            jsontext["data"]["status"][i]["value"] = 1
-            jsontext["data"]["status"][i]["max"] = 1
-            i = i + 1
-
-        for item in self.items:
-            itemnum = item.split("*")
-            if len(itemnum) > 1:
-                if not ("非表示" in item or "非消費" in item):
-                    jsontext["data"]["status"].append({})
-                    jsontext["data"]["status"][i]["label"] = itemnum[0]
-                    jsontext["data"]["status"][i]["value"] = itemnum[1]
-                    jsontext["data"]["status"][i]["max"] = itemnum[1]
-                    i = i + 1
-            else:
-                if not ("非表示" in item or "非消費" in item):
-                    jsontext["data"]["status"].append({})
-                    jsontext["data"]["status"][i]["label"] = item
-                    jsontext["data"]["status"][i]["value"] = 1
-                    jsontext["data"]["status"][i]["max"] = 1
-                    i = i + 1
-
-        jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][i]["label"] = "クリティカル値"
-        jsontext["data"]["status"][i]["value"] = 12
-        jsontext["data"]["status"][i]["max"] = 13
+        jsontext["data"]["status"][i]["label"] = "COINS_EP"
+        jsontext["data"]["status"][i]["value"] = self.ep
+        jsontext["data"]["status"][i]["max"] = 1000
         i = i + 1
 
         jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][i]["label"] = "ファンブル値"
-        jsontext["data"]["status"][i]["value"] = 2
-        jsontext["data"]["status"][i]["max"] = 13
+        jsontext["data"]["status"][i]["label"] = "COINS_SP"
+        jsontext["data"]["status"][i]["value"] = self.sp
+        jsontext["data"]["status"][i]["max"] = 1000
+        i = i + 1
+
+        jsontext["data"]["status"].append({})
+        jsontext["data"]["status"][i]["label"] = "COINS_CP"
+        jsontext["data"]["status"][i]["value"] = self.cp
+        jsontext["data"]["status"][i]["max"] = 1000
+        i = i + 1
+
+        jsontext["data"]["status"].append({})
+        jsontext["data"]["status"][i]["label"] = "死亡セーヴ_成功"
+        jsontext["data"]["status"][i]["value"] = self.death_save_success
+        jsontext["data"]["status"][i]["max"] = self.death_save_success_max
+        i = i + 1
+
+        jsontext["data"]["status"].append({})
+        jsontext["data"]["status"][i]["label"] = "死亡セーヴ_失敗"
+        jsontext["data"]["status"][i]["value"] = self.death_save_fail
+        jsontext["data"]["status"][i]["max"] = self.death_save_fail_max
         i = i + 1
 
         #弾数の管理はなし
 
         jsontext["data"]["params"] = []
 
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][0]["label"] = "体力基本値"
-        jsontext["data"]["params"][0]["value"] = self.strong_total
+        j = 0
 
         jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][1]["label"] = "反射基本値"
-        jsontext["data"]["params"][1]["value"] = self.sense_total
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][2]["label"] = "知覚基本値"
-        jsontext["data"]["params"][2]["value"] = self.strong_total
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][3]["label"] = "理知基本値"
-        jsontext["data"]["params"][3]["value"] = self.intellect_total
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][4]["label"] = "意志基本値"
-        jsontext["data"]["params"][4]["value"] = self.will_total
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][5]["label"] = "幸運基本値"
-        jsontext["data"]["params"][5]["value"] = self.bllesing_bonus
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][6]["label"] = "体力B"
-        jsontext["data"]["params"][6]["value"] = self.strong_bonus
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][7]["label"] = "反射B"
-        jsontext["data"]["params"][7]["value"] = self.sense_bonus
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][8]["label"] = "知覚B"
-        jsontext["data"]["params"][8]["value"] = self.strong_bonus
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][9]["label"] = "理知B"
-        jsontext["data"]["params"][9]["value"] = self.intellect_bonus
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][10]["label"] = "意志B"
-        jsontext["data"]["params"][10]["value"] = self.will_bonus
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][11]["label"] = "幸運B"
-        jsontext["data"]["params"][11]["value"] = self.bllesing_bonus
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][12]["label"] = "命中値"
-        jsontext["data"]["params"][12]["value"] = self.outfits_total_hit
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][13]["label"] = "回避値"
-        jsontext["data"]["params"][13]["value"] = self.outfits_total_dodge
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][14]["label"] = "魔導値"
-        jsontext["data"]["params"][14]["value"] = self.outfits_total_magic
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][15]["label"] = "抗魔値"
-        jsontext["data"]["params"][15]["value"] = self.outfits_total_countermagic
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][16]["label"] = "行動値"
-        jsontext["data"]["params"][16]["value"] = self.outfits_total_action
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][17]["label"] = "移動力"
-        jsontext["data"]["params"][17]["value"] = self.outfits_total_battlespeed_total
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][18]["label"] = "斬防御"
-        jsontext["data"]["params"][18]["value"] = self.armourstotal_slash
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][19]["label"] = "刺防御"
-        jsontext["data"]["params"][19]["value"] = self.armourstotal_pierce
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][20]["label"] = "殴防御"
-        jsontext["data"]["params"][20]["value"] = self.armourstotal_crash
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][21]["label"] = "炎防御"
-        jsontext["data"]["params"][21]["value"] = self.armourstotal_fire
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][22]["label"] = "氷防御"
-        jsontext["data"]["params"][22]["value"] = self.armourstotal_ice
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][23]["label"] = "雷防御"
-        jsontext["data"]["params"][23]["value"] = self.armourstotal_thunder
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][24]["label"] = "光防御"
-        jsontext["data"]["params"][24]["value"] = self.armourstotal_light
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][25]["label"] = "闇防御"
-        jsontext["data"]["params"][25]["value"] = self.armourstotal_dark
-
-        j = 26
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][j]["label"] = "キャラクターレベル"
-        jsontext["data"]["params"][j]["value"] = self.level
+        jsontext["data"]["params"][j]["label"] = "レベル"
+        jsontext["data"]["params"][j]["value"] = self.character_level
         j = j + 1
-        k = 0
-        for classes in self.class_name:
-            jsontext["data"]["params"].append({})
-            jsontext["data"]["params"][j]["label"] = self.class_name[k] + "クラスレベル"
-            jsontext["data"]["params"][j]["value"] = self.class_level[k]
-            j = j + 1
-            k = k + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "イニシアチブ"
+        jsontext["data"]["params"][j]["value"] = self.initiative
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "AC"
+        jsontext["data"]["params"][j]["value"] = self.ac
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "移動速度"
+        jsontext["data"]["params"][j]["value"] = self.speed
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "筋力現在値"
+        jsontext["data"]["params"][j]["value"] = self.str_total
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "敏捷力現在値"
+        jsontext["data"]["params"][j]["value"] = self.dex_total
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "耐久力現在値"
+        jsontext["data"]["params"][j]["value"] = self.con_total
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "知力現在値"
+        jsontext["data"]["params"][j]["value"] = self.int_total
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "判断力現在値"
+        jsontext["data"]["params"][j]["value"] = self.wis_total
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "魅力現在値"
+        jsontext["data"]["params"][j]["value"] = self.cha_total
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "筋力修正"
+        jsontext["data"]["params"][j]["value"] = self.str_bonus
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "敏捷力修正"
+        jsontext["data"]["params"][j]["value"] = self.dex_bonus
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "耐久力修正"
+        jsontext["data"]["params"][j]["value"] = self.con_bonus
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "知力修正"
+        jsontext["data"]["params"][j]["value"] = self.int_bonus
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "判断力修正"
+        jsontext["data"]["params"][j]["value"] = self.wis_bonus
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "魅力修正"
+        jsontext["data"]["params"][j]["value"] = self.cha_bonus
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "筋力セーヴ"
+        jsontext["data"]["params"][j]["value"] = self.str_save
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "敏捷力セーヴ"
+        jsontext["data"]["params"][j]["value"] = self.dex_save
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "耐久力セーヴ"
+        jsontext["data"]["params"][j]["value"] = self.con_save
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "知力セーヴ"
+        jsontext["data"]["params"][j]["value"] = self.int_save
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "判断力セーヴ"
+        jsontext["data"]["params"][j]["value"] = self.wis_save
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "魅力セーヴ"
+        jsontext["data"]["params"][j]["value"] = self.cha_save
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "威圧"
+        jsontext["data"]["params"][j]["value"] = self.intimidation
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "医術"
+        jsontext["data"]["params"][j]["value"] = self.medicine
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "運動"
+        jsontext["data"]["params"][j]["value"] = self.athletics
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "隠密"
+        jsontext["data"]["params"][j]["value"] = self.stealth
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "軽業"
+        jsontext["data"]["params"][j]["value"] = self.acrobatics
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "看破"
+        jsontext["data"]["params"][j]["value"] = self.insight
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "芸能"
+        jsontext["data"]["params"][j]["value"] = self.performance
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "自然"
+        jsontext["data"]["params"][j]["value"] = self.nature
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "宗教"
+        jsontext["data"]["params"][j]["value"] = self.religion
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "生存"
+        jsontext["data"]["params"][j]["value"] = self.survival
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "説得"
+        jsontext["data"]["params"][j]["value"] = self.persuasion
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "捜査"
+        jsontext["data"]["params"][j]["value"] = self.investigation
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "知覚"
+        jsontext["data"]["params"][j]["value"] = self.perception
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "手先の早業"
+        jsontext["data"]["params"][j]["value"] = self.sleight_of_hand
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "動物使い"
+        jsontext["data"]["params"][j]["value"] = self.animal_handling
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "ペテン"
+        jsontext["data"]["params"][j]["value"] = self.deception
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "魔法学"
+        jsontext["data"]["params"][j]["value"] = self.arcana
+        j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "歴史"
+        jsontext["data"]["params"][j]["value"] = self.history
+        j = j + 1
 
         jsontext["data"]["params"].append({})
         jsontext["data"]["params"][j]["label"] = "状態"
         jsontext["data"]["params"][j]["value"] = ""
         j = j + 1
 
-        outfits_rightattack_array = self.outfits_rightattack.split("+")
-        outfits_leftattack_array = self.outfits_leftattack.split("+")
-        outfits_magicrightattack_array = self.outfits_magicrightattack.split("+")
-        outfits_magicleftattack_array = self.outfits_magicleftattack.split("+")
-
         jsontext["data"]["active"] = "true"
         jsontext["data"]["secret"] = "false"
         jsontext["data"]["invisible"] = "false"
         jsontext["data"]["hideStatus"] = "false"
-        command = "//アクション\nムーブ:\nマイナー:\nメジャー:\n\n//リソース\n" + \
-                                       "C({HP}-YY)　残りHP\n" + \
-                                       "C({MP}-YY)　残りMP\n\n" + \
-                                       "//防御、+0欄に修正を記入\n2d6+{回避値}+0[{クリティカル値},{ファンブル値}]　近・回避\n" + \
-                                       "2d6+{抗魔値}+0[{クリティカル値},{ファンブル値}]　遠・抗魔\n" + \
-                                       "C(XX-{}-0)　被ダメージ、{}内に防御属性3文字\n\n" + \
-                                       "//攻撃、+0欄に修正を記入\n2d6+{命中値}+0[{クリティカル値},{ファンブル値}]　近・命中\n" + \
-                                       "2d6+{魔導値}+0[{クリティカル値},{ファンブル値}]　遠・魔導\n" + \
-                                       "2d6+" + outfits_rightattack_array[1] + "+0　" + \
-                                       "〈" + outfits_rightattack_array[0] + "〉" + \
-                                       self.outfits_rightname + "ダメージ\n" \
-                                       "2d6+" + outfits_leftattack_array[1] + "+0　" + \
-                                       "〈" + outfits_leftattack_array[0] + "〉" + \
-                                       self.outfits_leftname + "ダメージ\n" \
-                                       "2d6+" + outfits_magicrightattack_array[1] + "+0　" + \
-                                       "〈" + outfits_magicrightattack_array[0] + "〉" + \
-                                       self.outfits_magicrightname + "ダメージ\n" \
-                                       "2d6+" + outfits_magicleftattack_array[1] + "+0　" + \
-                                       "〈" + outfits_magicleftattack_array[0] + "〉" + \
-                                       self.outfits_magicleftname + "ダメージ\n" + \
-                                       "\n//能力値判定\n2d6+{体力B}[{クリティカル値},{ファンブル値}]　体力判定\n" + \
-                                       "2d6+{反射B}[{クリティカル値},{ファンブル値}]　反射判定\n2d6+{知覚B}[{クリティカル値},{ファンブル値}]　知覚判定\n" + \
-                                       "2d6+{理知B}[{クリティカル値},{ファンブル値}]　理知判定\n2d6+{意志B}[{クリティカル値},{ファンブル値}]　意志判定\n" + \
-                                       "2d6+{幸運B}[{クリティカル値},{ファンブル値}]　幸運判定"
-        command = command + "\n\n//特技"
-        for i in range(len(self.skill_memo)):
-            if not self.skill_name[i] == "":
-                command = command + "\n特技名:" + self.skill_name[i].replace("\n", "") + "/クラス:" + self.skill_class[i] + \
-                          "/レベル:" + self.skill_level[i] + "/種別:" + self.skill_type[i] + "/タイミング:" + \
-                          self.skill_timing[i] + "/対象:" + self.skill_target[i] + "/射程:" + self.skill_range[i] + \
-                          "/代償:" +  self.skill_cost[i] + "/備考:" + self.skill_memo[i].replace("\n", "")
-
-        command = command + "\n\n//加護"
-        for i in range(len(self.specials)):
-            if not self.specials[i] == "":
-                command = command + "\n加護名:" + self.specials[i].replace("\n", "") + "/効果:" + self.specials_effect[i].replace("\n", "")
-
-        command = command + "\n\n//アイテム"
-        for i in range(len(self.items)):
-            if not (self.items[i] == "" or self.items_effect[i] == "特技" or "非アイテム" in self.items_effect[i]
-            or "特技" in self.items[i] or "非アイテム" in self.items[i] or "非表示" in self.items[i]):
-                itemstr = self.items[i].split("*")
-                command = command + "\nアイテム名:" + itemstr[0].replace("\n", "") + "/効果:" + self.items_effect[i].replace("\n", "")
+        command = "//能力値判定\n1d20+{判定値}\n1d20{修正}"
 
         jsontext["data"]["commands"] = command
         jsontext["data"]["externalUrl"] = self.url
-        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_クエスター駒データ.txt"
+        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_冒険者駒データ.txt"
 
         with open(file_name, 'w', encoding="utf-8") as file:  # 第二引数：writableオプションを指定
             json.dump(jsontext, file, ensure_ascii=False)
 
-        print("クエスター駒データを生成しました")
-
-
-class CharacterData():
-    url = ""
-    character_name = ""
-    player_name = ""
-    strong_total = 0
-    strong_bonus = 0
-    reflex_total = 0
-    reflex_bonus = 0
-    sense_total = 0
-    sense_bonus = 0
-    intellect_total = 0
-    intellect_bonus = 0
-    will_total = 0
-    will_bonus = 0
-    bllesing_total = 0
-    bllesing_bonus = 0
-    specials_000 = ""
-    specials_001 = ""
-    specials_002 = ""
-    specials_003 = ""
-    specials_004 = ""
-    add_fortune_point = 0
-    battlesubtotal_hit = 0
-    battlesubtotal_dodge = 0
-    battlesubtotal_magic = 0
-    battlesubtotal_countermagic = 0
-    battlesubtotal_action = 0
-    battlesubtotal_hp = 0
-    battlesubtotal_mp = 0
-    battlesubtotal_attack = 0
-
-    def input_data(self, driver, input_url):
-        self.url = input_url
-        self.character_name = driver.find_element(by=By.ID, value="base.name").get_attribute("value")
-        self.player_name = driver.find_element(by=By.ID, value="base.player").get_attribute("value")
-        self.strong_total = driver.find_element(by=By.ID, value="abl.strong.total").get_attribute("value")
-        self.strong_bonus = driver.find_element(by=By.ID, value="abl.strong.bonus").get_attribute("value")
-        self.reflex_total = driver.find_element(by=By.ID, value="abl.reflex.total").get_attribute("value")
-        self.reflex_bonus = driver.find_element(by=By.ID, value="abl.reflex.bonus").get_attribute("value")
-        self.sense_total = driver.find_element(by=By.ID, value="abl.sense.total").get_attribute("value")
-        self.sense_bonus = driver.find_element(by=By.ID, value="abl.sense.bonus").get_attribute("value")
-        self.intellect_total = driver.find_element(by=By.ID, value="abl.intellect.total").get_attribute("value")
-        self.intellect_bonus = driver.find_element(by=By.ID, value="abl.intellect.bonus").get_attribute("value")
-        self.will_total = driver.find_element(by=By.ID, value="abl.will.total").get_attribute("value")
-        self.will_bonus = driver.find_element(by=By.ID, value="abl.will.bonus").get_attribute("value")
-        self.bllesing_total = driver.find_element(by=By.ID, value="abl.bllesing.total").get_attribute("value")
-        self.bllesing_bonus = driver.find_element(by=By.ID, value="abl.bllesing.bonus").get_attribute("value")
-        self.battlesubtotal_hit = driver.find_element(by=By.ID, value="battlesubtotal.hit").get_attribute("value")
-        self.battlesubtotal_dodge = driver.find_element(by=By.ID, value="battlesubtotal.dodge").get_attribute("value")
-        self.battlesubtotal_magic = driver.find_element(by=By.ID, value="battlesubtotal.magic").get_attribute("value")
-        self.battlesubtotal_countermagic = driver.find_element(by=By.ID, value="battlesubtotal.countermagic").get_attribute("value")
-        self.battlesubtotal_action = driver.find_element(by=By.ID, value="battlesubtotal.action").get_attribute("value")
-        self.battlesubtotal_hp = driver.find_element(by=By.ID, value="battlesubtotal.hp").get_attribute("value")
-        self.battlesubtotal_mp = driver.find_element(by=By.ID, value="battlesubtotal.mp").get_attribute("value")
-        self.battlesubtotal_attack = driver.find_element(by=By.ID, value="battlesubtotal.attack").get_attribute("value")
-
-        self.specials.append(driver.find_element(by=By.ID, value="specials.0.name").get_attribute("value"))
-
-        for i in range(98):
-            try:
-                specialnum = i + 1
-                specialstr = "specials." + str(specialnum).zfill(3) + ".name"
-                self.specials.append(driver.find_element(by=By.ID, value=specialstr).get_attribute("value"))
-            except:
-                break
-
-        self.add_fortune_point = driver.find_element(by=By.ID, value="fortunepoint").get_attribute("value")
-        print(self.character_name)
-
-    def output_text(self):
-        # 駒のテキストデータを出力する
-        text = "PC:" + self.character_name + \
-               " PL:" + self.player_name + "\n"
-
-        text = text + "【体力】" + str(self.strong_total) + "/+" + str(self.strong_bonus) + \
-               "【反射】" + str(self.reflex_total) + "/+" + str(self.reflex_bonus) + \
-               "【知覚】" + str(self.sense_total) + "/+" + str(self.sense_bonus) + \
-               "\n【理知】" + str(self.intellect_total) + "/+" + str(self.intellect_bonus) + \
-               "【意志】" + str(self.will_total) + "/+" + str(self.will_bonus) + \
-               "【幸運】" + str(self.bllesing_total) + "/+" + str(self.bllesing_bonus) + "\n"
-
-        text = text + "加護:" + self.specials_000 + "/" + self.specials_001 + "/" + self.specials_002
-
-        if self.specials_003 != "":
-            text = text + "/" + self.specials_003
-
-        if self.specials_004 != "":
-            text = text + "/" + self.specials_004
-
-        text = text + "\n財産ポイント:" + self.add_fortune_point
-
-        print(text)
-
-        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_未装備テキストデータ.txt"
-
-        f = open(file_name, 'w', encoding="utf-8")
-        f.write(text)
-        f.close()
-
-        print("未装備テキストデータを生成しました")
-        self.output_pawn(text)
-        #tkinter.messagebox.showinfo(title="完了", message="駒データを生成しました")
-
-    def output_pawn(self, text_data):
-        # 駒のココフォリア用データを出力する
-        jsontext = {}
-        jsontext["kind"] = "character"
-        jsontext["data"] = {}
-        jsontext["data"]["name"] = self.character_name
-        jsontext["data"]["memo"] = text_data
-        jsontext["data"]["initiative"] = int(self.battlesubtotal_action)
-        jsontext["data"]["status"] = []
-
-        jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][0]["label"] = "URL"
-        jsontext["data"]["status"][0]["value"] = self.url
-        jsontext["data"]["status"][0]["max"] = self.url
-
-        jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][1]["label"] = "HP"
-        jsontext["data"]["status"][1]["value"] = self.battlesubtotal_hp
-        jsontext["data"]["status"][1]["max"] = self.battlesubtotal_hp
-
-        jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][2]["label"] = "MP"
-        jsontext["data"]["status"][2]["value"] = self.battlesubtotal_mp
-        jsontext["data"]["status"][2]["max"] = self.battlesubtotal_mp
-
-        jsontext["data"]["params"] = []
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][0]["label"] = "体力基本値"
-        jsontext["data"]["params"][0]["value"] = self.strong_total
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][1]["label"] = "反射基本値"
-        jsontext["data"]["params"][1]["value"] = self.sense_total
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][2]["label"] = "知覚基本値"
-        jsontext["data"]["params"][2]["value"] = self.strong_total
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][3]["label"] = "理知基本値"
-        jsontext["data"]["params"][3]["value"] = self.intellect_total
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][4]["label"] = "意志基本値"
-        jsontext["data"]["params"][4]["value"] = self.will_total
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][5]["label"] = "幸運基本値"
-        jsontext["data"]["params"][5]["value"] = self.bllesing_total
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][6]["label"] = "体力B"
-        jsontext["data"]["params"][6]["value"] = self.strong_bonus
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][7]["label"] = "反射B"
-        jsontext["data"]["params"][7]["value"] = self.sense_bonus
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][8]["label"] = "知覚B"
-        jsontext["data"]["params"][8]["value"] = self.strong_bonus
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][9]["label"] = "理知B"
-        jsontext["data"]["params"][9]["value"] = self.intellect_bonus
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][10]["label"] = "意志B"
-        jsontext["data"]["params"][10]["value"] = self.will_bonus
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][11]["label"] = "幸運B"
-        jsontext["data"]["params"][11]["value"] = self.bllesing_bonus
-
-        jsontext["data"]["active"] = "true"
-        jsontext["data"]["secret"] = "false"
-        jsontext["data"]["invisible"] = "false"
-        jsontext["data"]["hideStatus"] = "false"
-        jsontext["data"]["externalUrl"] = self.url
-        jsontext["data"]["commands"] = "//能力値判定\n2d6+{体力B}  体力判定\n2d6+{反射B}  反射判定\n2d6+{知覚B}  " \
-                                       "知覚判定\n2d6+{理知B}  理知判定\n2d6+{意志B}  意志判定\n2d6+{幸運B}  幸運判定"
-        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_未装備駒データ.txt"
-
-        with open(file_name, 'w', encoding="utf-8") as file:  # 第二引数：writableオプションを指定
-            json.dump(jsontext, file, ensure_ascii=False)
-
-        print("未装備駒データを生成しました")
+        print("冒険者駒データを生成しました")
 
 
 def get_data(value):
