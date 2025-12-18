@@ -76,36 +76,35 @@ def get_save_value(driver, ability_jp: str, timeout: int = 10) -> str:
     return el.text.strip()
 
 
-def get_attacks(driver) -> list[dict]:
-    """
-    戻り値例:
-    [
-      {"attack": "ロングソード", "attack_bonus": "+7", "damage": "1d8+4", "type": "斬撃", "note": "..."},
-      ...
-    ]
-    空行（全部空白）は除外します。
-    """
-    attacks = []
+def _clean_cell_text(s: str) -> str:
+    # 全角スペースや空白だけの値を空にする
+    if s is None:
+        return ""
+    s = s.replace("\u3000", " ").strip()  # 全角スペース→半角→strip
+    return s
 
-    # 「攻撃」テーブル（summary='攻撃'）のうち、tdが6個ある行だけを対象にする
-    #  (攻撃列は colspan=2 なので td 数は 2+1+1+1+1 = 6)
-    rows = driver.find_elements(
-        By.XPATH,
-        "//table[@summary='攻撃']//tr[count(td)=6]"
-    )
+def get_attacks(driver, timeout: int = 10) -> list[dict]:
+    attacks = []
+    wait = WebDriverWait(driver, timeout)
+
+    # 表の存在を待つ（ページ読込が遅いときの保険）
+    wait.until(EC.presence_of_element_located((By.XPATH, "//table[@summary='攻撃']")))
+
+    # 攻撃行は td が5個（攻撃名がcolspan=2なのでtd数は増えない）
+    rows = driver.find_elements(By.XPATH, "//table[@summary='攻撃']//tr[count(td)=5]")
 
     for r in rows:
         tds = r.find_elements(By.XPATH, "./td")
+        if len(tds) != 5:
+            continue
 
-        # 攻撃名（colspan=2のセル）
-        attack_name = tds[0].text.strip()
+        attack_name  = _clean_cell_text(tds[0].text)
+        attack_bonus = _clean_cell_text(tds[1].text)
+        damage       = _clean_cell_text(tds[2].text)
+        dmg_type     = _clean_cell_text(tds[3].text)
+        note         = _clean_cell_text(tds[4].text)
 
-        attack_bonus = tds[1].text.strip()
-        damage = tds[2].text.strip()
-        dmg_type = tds[3].text.strip()
-        note = tds[4].text.strip()
-
-        # 空行（全部空）を除外
+        # 空行（全部空）は捨てる
         if not any([attack_name, attack_bonus, damage, dmg_type, note]):
             continue
 
@@ -825,8 +824,10 @@ class GuardianData:
         command = command + "1d20+｛イニシアチブ｝ ▼イニシアチブ\n"
         command = command + "\n//命中判定==========\n"
         for wpn in self.weapon:
-            command = command + "1d20+" + wpn["attack_bonus"] + " ▼" + wpn["attack"] + "での攻撃ロール\n"
-            command = command + wpn["damage"] + " ▼" + wpn["attack"] + "でのダメージロール[" + wpn["type"] + "]\n"
+            if not wpn["attack"] == "攻撃":
+                command = command + "1d20+" + wpn["attack_bonus"] + " ▼" + wpn["attack"] + "での攻撃ロール\n"
+                command = command + wpn["damage"] + " ▼" + wpn["attack"] + \
+                "でのダメージロール[" + wpn["type"] + "]" + wpn["note"] + "\n"
 
         command = command + "\n//能力値判定==========\n"
         command = command + "1d20｛筋力修正｝ ▼【筋力】能力値判定\n"
