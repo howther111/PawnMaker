@@ -14,6 +14,7 @@ import json
 class GuardianData():
     character_name = ""
     guardian_name = ""
+    desire = ""
     level = 0
     guardian_size = ""
     player_name = ""
@@ -101,6 +102,7 @@ class GuardianData():
         self.level = driver.find_element(by=By.ID, value="base.level").get_attribute("value")
         #self.guardian_size = driver.find_element(by=By.ID, value="base.guardian.size").get_attribute("value")
         self.player_name = driver.find_element(by=By.ID, value="base.player").get_attribute("value")
+        self.desire = driver.find_element(by=By.ID, value="base.desire").get_attribute("value")
         self.strong_total = driver.find_element(by=By.ID, value="abl.strong.total").get_attribute("value")
         self.strong_bonus = driver.find_element(by=By.ID, value="abl.strong.bonus").get_attribute("value")
         self.reflex_total = driver.find_element(by=By.ID, value="abl.reflex.total").get_attribute("value")
@@ -280,6 +282,10 @@ class GuardianData():
         classlevelstr = "classes.0.level"
         self.class_name.append(driver.find_element(by=By.ID, value=classnamestr).get_attribute("value"))
         self.class_level.append(driver.find_element(by=By.ID, value=classlevelstr).get_attribute("value"))
+        if self.class_name[0] == "":
+            classnamestr2 = "classes.0.nametext"
+            self.class_name[0] = driver.find_element(by=By.ID, value=classnamestr2).get_attribute("value")
+
         for i in range(98):
             try:
                 classnum = i + 1
@@ -287,6 +293,9 @@ class GuardianData():
                 classlevelstr = "classes." + str(classnum).zfill(3) + ".level"
                 self.class_name.append(driver.find_element(by=By.ID, value=classnamestr).get_attribute("value"))
                 self.class_level.append(driver.find_element(by=By.ID, value=classlevelstr).get_attribute("value"))
+                if self.class_name[classnum] == "":
+                    classnamestr2 = "classes." + str(classnum).zfill(3) + ".nametext"
+                    self.class_name[classnum] = driver.find_element(by=By.ID, value=classnamestr2).get_attribute("value")
             except:
                 break
 
@@ -298,14 +307,14 @@ class GuardianData():
                    "PL:" + self.player_name + "\n" + \
                    "レベル:" + self.level
 
-        text = text + "\n威信点:" + self.add_fortune_point
+        text = text + " 威信点:" + self.add_fortune_point
 
         text = text + "\n【命中】" + str(self.outfits_total_hit) + \
                    "【回避】" + str(self.outfits_total_dodge) + \
                    "【電脳】" + str(self.outfits_total_magic) + \
                    "【防壁】" + str(self.outfits_total_countermagic) + \
-                   "【行動】" + str(self.outfits_total_action) + \
-                   "\n【耐久】" + str(self.outfits_total_hp) + \
+                   "\n【行動】" + str(self.outfits_total_action) + \
+                   "【耐久】" + str(self.outfits_total_hp) + \
                    "【感応】" + str(self.outfits_total_mp) + \
                    "【移動力】" + str(self.outfits_total_battlespeed_total)
 
@@ -340,7 +349,7 @@ class GuardianData():
                 "/炎" + self.armourstotal_fire + \
                 "/氷" + self.armourstotal_ice + \
                 "/雷" + self.armourstotal_thunder + \
-                "/光" + self.armourstotal_light + \
+                "\n/光" + self.armourstotal_light + \
                 "/闇" + self.armourstotal_dark + \
                 "/電" + self.armourstotal_electrical + \
                 "/毒" + self.armourstotal_poison + \
@@ -596,6 +605,11 @@ class GuardianData():
             jsontext["data"]["params"][j]["label"] = self.class_name[l] + "クラスレベル"
             jsontext["data"]["params"][j]["value"] = self.class_level[l]
             j = j + 1
+
+        jsontext["data"]["params"].append({})
+        jsontext["data"]["params"][j]["label"] = "デザイア"
+        jsontext["data"]["params"][j]["value"] = self.desire
+        j = j + 1
 
         jsontext["data"]["params"].append({})
         jsontext["data"]["params"][j]["label"] = "状態"

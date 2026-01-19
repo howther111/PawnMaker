@@ -272,6 +272,10 @@ class GuardianData():
         classlevelstr = "classes.0.level"
         self.class_name.append(driver.find_element(by=By.ID, value=classnamestr).get_attribute("value"))
         self.class_level.append(driver.find_element(by=By.ID, value=classlevelstr).get_attribute("value"))
+        if self.class_name[0] == "":
+            classnamestr2 = "classes.0.nametext"
+            self.class_name[0] = driver.find_element(by=By.ID, value=classnamestr2).get_attribute("value")
+
         for i in range(98):
             try:
                 classnum = i + 1
@@ -279,6 +283,9 @@ class GuardianData():
                 classlevelstr = "classes." + str(classnum).zfill(3) + ".level"
                 self.class_name.append(driver.find_element(by=By.ID, value=classnamestr).get_attribute("value"))
                 self.class_level.append(driver.find_element(by=By.ID, value=classlevelstr).get_attribute("value"))
+                if self.class_name[classnum] == "":
+                    classnamestr2 = "classes." + str(classnum).zfill(3) + ".nametext"
+                    self.class_name[classnum] = driver.find_element(by=By.ID, value=classnamestr2).get_attribute("value")
             except:
                 break
 
