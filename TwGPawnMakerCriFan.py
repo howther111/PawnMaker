@@ -645,12 +645,12 @@ class GuardianData():
                                        "2d6+" + outfits_electrical_w_2attack_array[1] + "+0　" + \
                                        "〈" + outfits_electrical_w_2attack_array[0] + "〉" + \
                                        self.outfits_electrical_w_2name + "ダメージ\n" + \
-                                       "\n//能力値判定\n2d6+{体力B}[{クリティカル値},{ファンブル値}]　体力判定\n" + \
-                                       "2d6+{反射B}[{クリティカル値},{ファンブル値}]　反射判定\n" + \
-                                       "2d6+{知覚B}[{クリティカル値},{ファンブル値}]　知覚判定\n" + \
-                                       "2d6+{理知B}[{クリティカル値},{ファンブル値}]　理知判定\n" + \
-                                       "2d6+{意志B}[{クリティカル値},{ファンブル値}]　意志判定\n" + \
-                                       "2d6+{幸運B}[{クリティカル値},{ファンブル値}]　幸運判定"
+                                       "\n//能力値判定\n2d6+{体力B}+0[{クリティカル値},{ファンブル値}]　体力判定\n" + \
+                                       "2d6+{反射B}+0[{クリティカル値},{ファンブル値}]　反射判定\n" + \
+                                       "2d6+{知覚B}+0[{クリティカル値},{ファンブル値}]　知覚判定\n" + \
+                                       "2d6+{理知B}+0[{クリティカル値},{ファンブル値}]　理知判定\n" + \
+                                       "2d6+{意志B}+0[{クリティカル値},{ファンブル値}]　意志判定\n" + \
+                                       "2d6+{幸運B}+0[{クリティカル値},{ファンブル値}]　幸運判定"
         command = command + "\n\n//特技"
         for i in range(len(self.skill_memo)):
             if not self.skill_name[i] == "":
@@ -868,18 +868,18 @@ class CharacterData():
         jsontext["data"]["invisible"] = "false"
         jsontext["data"]["hideStatus"] = "false"
         jsontext["data"]["externalUrl"] = self.url
-        jsontext["data"]["commands"] = "//能力値判定\n2d6+{体力B}[{クリティカル値},{ファンブル値}]　体力判定\n" + \
-                                       "2d6+{反射B}[{クリティカル値},{ファンブル値}]　反射判定\n" + \
-                                       "2d6+{知覚B}[{クリティカル値},{ファンブル値}]　知覚判定\n" + \
-                                       "2d6+{理知B}[{クリティカル値},{ファンブル値}]　理知判定\n" + \
-                                       "2d6+{意志B}[{クリティカル値},{ファンブル値}]　意志判定\n" + \
-                                       "2d6+{幸運B}[{クリティカル値},{ファンブル値}]　幸運判定"
-        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_リンケージ駒データ.txt"
+        jsontext["data"]["commands"] = "//能力値判定\n2d6+{体力B}+0[{クリティカル値},{ファンブル値}]　体力判定\n" + \
+                                       "2d6+{反射B}+0[{クリティカル値},{ファンブル値}]　反射判定\n" + \
+                                       "2d6+{知覚B}+0[{クリティカル値},{ファンブル値}]　知覚判定\n" + \
+                                       "2d6+{理知B}+0[{クリティカル値},{ファンブル値}]　理知判定\n" + \
+                                       "2d6+{意志B}+0[{クリティカル値},{ファンブル値}]　意志判定\n" + \
+                                       "2d6+{幸運B}+0[{クリティカル値},{ファンブル値}]　幸運判定"
+        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_未装備駒データ.txt"
 
         with open(file_name, 'w', encoding="utf-8") as file:  # 第二引数：writableオプションを指定
             json.dump(jsontext, file, ensure_ascii=False)
 
-        print("リンケージ駒データを生成しました")
+        print("未装備駒データを生成しました")
 
 
 def get_data(value):

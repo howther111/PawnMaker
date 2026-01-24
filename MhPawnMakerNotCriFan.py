@@ -545,10 +545,10 @@ class HeroData():
                                        "2d6+" + outfits_sub_weapon_shortattack_array[1] + "+0　" + \
                                        "〈" + outfits_sub_weapon_shortattack_array[0] + "〉" + \
                                        self.outfits_sub_weapon_shortname + "ダメージ\n" \
-                                       "\n//能力値判定\n2d6+{体力B}　体力判定\n" + \
-                                       "2d6+{反射B}　反射判定\n2d6+{知覚B}　知覚判定\n" + \
-                                       "2d6+{理知B}　理知判定\n2d6+{意志B}　意志判定\n" + \
-                                       "2d6+{幸運B}　幸運判定"
+                                       "\n//能力値判定\n2d6+{体力B}+0　体力判定\n" + \
+                                       "2d6+{反射B}+0　反射判定\n2d6+{知覚B}+0　知覚判定\n" + \
+                                       "2d6+{理知B}+0　理知判定\n2d6+{意志B}+0　意志判定\n" + \
+                                       "2d6+{幸運B}+0　幸運判定"
         command = command + "\n\n//特技"
         for i in range(len(self.skill_memo)):
             if not self.skill_name[i] == "":
