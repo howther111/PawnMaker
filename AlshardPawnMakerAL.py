@@ -584,7 +584,7 @@ class GuardianData():
                                        self.outfits_magicleftname + "ダメージ\n" + \
                                        "\n//能力値判定\nAL+{体力B}+0　体力判定\n" + \
                                        "AL+{反射B}+0　反射判定\nAL+{知覚B}+0　知覚判定\n" + \
-                                       "AL+{理知B}+0　理知判定\AL+{意志B}+0　意志判定\n" + \
+                                       "AL+{理知B}+0　理知判定\nAL+{意志B}+0　意志判定\n" + \
                                        "AL+{幸運B}+0　幸運判定"
         command = command + "\n\n//特技"
         for i in range(len(self.skill_memo)):
