@@ -323,22 +323,22 @@ class GuardianData():
             text = text + special + "/"
         text = text[:-1]
 
-        text = text + "\n[*]主近:" + self.outfits_physical_w_1name + \
+        text = text + "\n[*]物武1:" + self.outfits_physical_w_1name + \
                 " 射程:" + self.outfits_physical_w_1range + \
                 " 代償:" + self.outfits_physical_w_1strong + \
                 "\n攻撃力:" + self.outfits_physical_w_1attack
 
-        text = text + "\n[*]副近:" + self.outfits_physical_w_2name + \
+        text = text + "\n[*]物武2:" + self.outfits_physical_w_2name + \
                 " 射程:" + self.outfits_physical_w_2range + \
                 " 代償:" + self.outfits_physical_w_2strong + \
                 "\n攻撃力:" + self.outfits_physical_w_2attack
 
-        text = text + "\n[*]主遠:" + self.outfits_electrical_w_1name + \
+        text = text + "\n[*]電武1:" + self.outfits_electrical_w_1name + \
                    " 射程:" + self.outfits_electrical_w_1range + \
                    " 代償:" + self.outfits_electrical_w_1strong + \
                    "\n攻撃力:" + self.outfits_electrical_w_1attack
 
-        text = text + "\n[*]副遠:" + self.outfits_electrical_w_2name + \
+        text = text + "\n[*]電武2:" + self.outfits_electrical_w_2name + \
                    " 射程:" + self.outfits_electrical_w_2range + \
                    " 代償:" + self.outfits_electrical_w_2strong + \
                    "\n攻撃力:" + self.outfits_electrical_w_2attack

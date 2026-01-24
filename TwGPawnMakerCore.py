@@ -323,38 +323,13 @@ class GuardianData():
             text = text + special + "/"
         text = text[:-1]
 
-        text = text + "\n[*]物武1:" + self.outfits_physical_w_1name + \
-                " 射程:" + self.outfits_physical_w_1range + \
-                " 代償:" + self.outfits_physical_w_1strong + \
-                "\n攻撃力:" + self.outfits_physical_w_1attack
+        text = text + "\n[*]物武1:" + self.outfits_physical_w_1name
 
-        text = text + "\n[*]物武2:" + self.outfits_physical_w_2name + \
-                " 射程:" + self.outfits_physical_w_2range + \
-                " 代償:" + self.outfits_physical_w_2strong + \
-                "\n攻撃力:" + self.outfits_physical_w_2attack
+        text = text + "\n[*]物武2:" + self.outfits_physical_w_2name
 
-        text = text + "\n[*]電武1:" + self.outfits_electrical_w_1name + \
-                   " 射程:" + self.outfits_electrical_w_1range + \
-                   " 代償:" + self.outfits_electrical_w_1strong + \
-                   "\n攻撃力:" + self.outfits_electrical_w_1attack
+        text = text + "\n[*]電武1:" + self.outfits_electrical_w_1name
 
-        text = text + "\n[*]電武2:" + self.outfits_electrical_w_2name + \
-                   " 射程:" + self.outfits_electrical_w_2range + \
-                   " 代償:" + self.outfits_electrical_w_2strong + \
-                   "\n攻撃力:" + self.outfits_electrical_w_2attack
-
-        text = text + "\n防御力:斬" + self.armourstotal_slash + \
-                "/刺" + self.armourstotal_pierce + \
-                "/殴" + self.armourstotal_crash + \
-                "/炎" + self.armourstotal_fire + \
-                "/氷" + self.armourstotal_ice + \
-                "/雷" + self.armourstotal_thunder + \
-                "\n/光" + self.armourstotal_light + \
-                "/闇" + self.armourstotal_dark + \
-                "/電" + self.armourstotal_electrical + \
-                "/毒" + self.armourstotal_poison + \
-                "/空" + self.armourstotal_suffocation + \
-                "/汚" + self.armourstotal_infect
+        text = text + "\n[*]電武2:" + self.outfits_electrical_w_2name
 
         #text = text + "\nアイテム:"
         #for item in self.items:
@@ -363,13 +338,13 @@ class GuardianData():
 
         print(text)
 
-        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_デイブレイカーテキストデータ.txt"
+        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_デイブレイカーコアテキストデータ.txt"
 
         f = open(file_name, 'w', encoding="utf-8")
         f.write(text)
         f.close()
 
-        print("デイブレイカーテキストデータを生成しました")
+        print("デイブレイカーコアテキストデータを生成しました")
         self.output_pawn(text)
 
     def output_pawn(self, text_data):
@@ -431,33 +406,33 @@ class GuardianData():
         if "/" in self.outfits_physical_w_1strong:
             mws_ammo = self.outfits_physical_w_1strong.split("/")
             jsontext["data"]["status"].append({})
-            jsontext["data"]["status"][i]["label"] = self.outfits_physical_w_1name + "弾数"
-            jsontext["data"]["status"][i]["value"] = mws_ammo[1]
-            jsontext["data"]["status"][i]["max"] = mws_ammo[1]
+            jsontext["data"]["status"][i]["label"] = "物武1弾数"
+            jsontext["data"]["status"][i]["value"] = "0"
+            jsontext["data"]["status"][i]["max"] = "10"
             i = i + 1
 
         if "/" in self.outfits_physical_w_2strong:
             sws_ammo = self.outfits_physical_w_2strong.split("/")
             jsontext["data"]["status"].append({})
-            jsontext["data"]["status"][i]["label"] = self.outfits_physical_w_2name + "弾数"
-            jsontext["data"]["status"][i]["value"] = sws_ammo[1]
-            jsontext["data"]["status"][i]["max"] = sws_ammo[1]
+            jsontext["data"]["status"][i]["label"] = "物武2弾数"
+            jsontext["data"]["status"][i]["value"] = "0"
+            jsontext["data"]["status"][i]["max"] = "10"
             i = i + 1
 
         if "/" in self.outfits_electrical_w_1strong:
             mwl_ammo = self.outfits_electrical_w_1strong.split("/")
             jsontext["data"]["status"].append({})
-            jsontext["data"]["status"][i]["label"] = self.outfits_electrical_w_1name + "弾数"
-            jsontext["data"]["status"][i]["value"] = mwl_ammo[1]
-            jsontext["data"]["status"][i]["max"] = mwl_ammo[1]
+            jsontext["data"]["status"][i]["label"] = "電武1弾数"
+            jsontext["data"]["status"][i]["value"] = "0"
+            jsontext["data"]["status"][i]["max"] = "10"
             i = i + 1
 
         if "/" in self.outfits_electrical_w_2strong:
             swl_ammo = self.outfits_electrical_w_2strong.split("/")
             jsontext["data"]["status"].append({})
-            jsontext["data"]["status"][i]["label"] = self.outfits_electrical_w_2name + "弾数"
-            jsontext["data"]["status"][i]["value"] = swl_ammo[1]
-            jsontext["data"]["status"][i]["max"] = swl_ammo[1]
+            jsontext["data"]["status"][i]["label"] = "電武2弾数"
+            jsontext["data"]["status"][i]["value"] = "0"
+            jsontext["data"]["status"][i]["max"] = "10"
             i = i + 1
 
         jsontext["data"]["status"].append({})
@@ -474,127 +449,7 @@ class GuardianData():
 
         jsontext["data"]["params"] = []
 
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][0]["label"] = "体力基本値"
-        jsontext["data"]["params"][0]["value"] = self.strong_total
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][1]["label"] = "反射基本値"
-        jsontext["data"]["params"][1]["value"] = self.sense_total
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][2]["label"] = "知覚基本値"
-        jsontext["data"]["params"][2]["value"] = self.strong_total
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][3]["label"] = "理知基本値"
-        jsontext["data"]["params"][3]["value"] = self.intellect_total
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][4]["label"] = "意志基本値"
-        jsontext["data"]["params"][4]["value"] = self.will_total
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][5]["label"] = "幸運基本値"
-        jsontext["data"]["params"][5]["value"] = self.bllesing_bonus
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][6]["label"] = "体力B"
-        jsontext["data"]["params"][6]["value"] = self.strong_bonus
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][7]["label"] = "反射B"
-        jsontext["data"]["params"][7]["value"] = self.sense_bonus
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][8]["label"] = "知覚B"
-        jsontext["data"]["params"][8]["value"] = self.strong_bonus
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][9]["label"] = "理知B"
-        jsontext["data"]["params"][9]["value"] = self.intellect_bonus
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][10]["label"] = "意志B"
-        jsontext["data"]["params"][10]["value"] = self.will_bonus
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][11]["label"] = "幸運B"
-        jsontext["data"]["params"][11]["value"] = self.bllesing_bonus
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][12]["label"] = "命中値"
-        jsontext["data"]["params"][12]["value"] = self.outfits_total_hit
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][13]["label"] = "回避値"
-        jsontext["data"]["params"][13]["value"] = self.outfits_total_dodge
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][14]["label"] = "電脳値"
-        jsontext["data"]["params"][14]["value"] = self.outfits_total_magic
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][15]["label"] = "防壁値"
-        jsontext["data"]["params"][15]["value"] = self.outfits_total_countermagic
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][16]["label"] = "行動値"
-        jsontext["data"]["params"][16]["value"] = self.outfits_total_action
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][17]["label"] = "移動力"
-        jsontext["data"]["params"][17]["value"] = self.outfits_total_battlespeed_total
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][18]["label"] = "斬防御"
-        jsontext["data"]["params"][18]["value"] = self.armourstotal_slash
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][19]["label"] = "刺防御"
-        jsontext["data"]["params"][19]["value"] = self.armourstotal_pierce
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][20]["label"] = "殴防御"
-        jsontext["data"]["params"][20]["value"] = self.armourstotal_crash
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][21]["label"] = "炎防御"
-        jsontext["data"]["params"][21]["value"] = self.armourstotal_fire
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][22]["label"] = "氷防御"
-        jsontext["data"]["params"][22]["value"] = self.armourstotal_ice
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][23]["label"] = "雷防御"
-        jsontext["data"]["params"][23]["value"] = self.armourstotal_thunder
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][24]["label"] = "光防御"
-        jsontext["data"]["params"][24]["value"] = self.armourstotal_light
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][25]["label"] = "闇防御"
-        jsontext["data"]["params"][25]["value"] = self.armourstotal_dark
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][26]["label"] = "電防御"
-        jsontext["data"]["params"][26]["value"] = self.armourstotal_electrical
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][27]["label"] = "毒防御"
-        jsontext["data"]["params"][27]["value"] = self.armourstotal_poison
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][28]["label"] = "空防御"
-        jsontext["data"]["params"][28]["value"] = self.armourstotal_suffocation
-
-        jsontext["data"]["params"].append({})
-        jsontext["data"]["params"][29]["label"] = "汚防御"
-        jsontext["data"]["params"][29]["value"] = self.armourstotal_infect
-
-        j = 30
+        j = 0
         jsontext["data"]["params"].append({})
         jsontext["data"]["params"][j]["label"] = "キャラクターレベル"
         jsontext["data"]["params"][j]["value"] = self.level
@@ -627,30 +482,7 @@ class GuardianData():
         jsontext["data"]["hideStatus"] = "false"
         command = "//アクション\nムーブ:\nマイナー:\nメジャー:\n\n//リソース\n" + \
                                        "C({HP}-YY)　残りHP\n" + \
-                                       "C({EN}-YY)　残りEN\n\n" + \
-                                       "//防御、+0欄に修正を記入\n2d6+{回避値}+0[{クリティカル値},{ファンブル値}]　近・回避\n" + \
-                                       "2d6+{防壁値}+0[{クリティカル値},{ファンブル値}]　遠・防壁\n" + \
-                                       "C(XX-{}-0)　被ダメージ、{}内に防御属性3文字\n\n" + \
-                                       "//攻撃、+0欄に修正を記入\n2d6+{命中値}+0[{クリティカル値},{ファンブル値}]　近・命中\n" + \
-                                       "2d6+{電脳値}+0[{クリティカル値},{ファンブル値}]　遠・電脳\n" + \
-                                       "2d6+" + outfits_physical_w_1attack_array[1] + "+0　" + \
-                                       "〈" + outfits_physical_w_1attack_array[0] + "〉" + \
-                                       self.outfits_physical_w_1name + "ダメージ\n" \
-                                       "2d6+" + outfits_physical_w_2attack_array[1] + "+0　" + \
-                                       "〈" + outfits_physical_w_2attack_array[0] + "〉" + \
-                                       self.outfits_physical_w_2name + "ダメージ\n" \
-                                       "2d6+" + outfits_electrical_w_1attack_array[1] + "+0　" + \
-                                       "〈" + outfits_electrical_w_1attack_array[0] + "〉" + \
-                                       self.outfits_electrical_w_1name + "ダメージ\n" \
-                                       "2d6+" + outfits_electrical_w_2attack_array[1] + "+0　" + \
-                                       "〈" + outfits_electrical_w_2attack_array[0] + "〉" + \
-                                       self.outfits_electrical_w_2name + "ダメージ\n" + \
-                                       "\n//能力値判定\n2d6+{体力B}+0[{クリティカル値},{ファンブル値}]　体力判定\n" + \
-                                       "2d6+{反射B}+0[{クリティカル値},{ファンブル値}]　反射判定\n" + \
-                                       "2d6+{知覚B}+0[{クリティカル値},{ファンブル値}]　知覚判定\n" + \
-                                       "2d6+{理知B}+0[{クリティカル値},{ファンブル値}]　理知判定\n" + \
-                                       "2d6+{意志B}+0[{クリティカル値},{ファンブル値}]　意志判定\n" + \
-                                       "2d6+{幸運B}+0[{クリティカル値},{ファンブル値}]　幸運判定"
+                                       "C({EN}-YY)　残りEN"
         command = command + "\n\n//特技"
         for i in range(len(self.skill_memo)):
             if not self.skill_name[i] == "":
@@ -674,12 +506,12 @@ class GuardianData():
 
         jsontext["data"]["commands"] = command
         jsontext["data"]["externalUrl"] = self.url
-        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_デイブレイカー駒データ.txt"
+        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_デイブレイカーコア駒データ.txt"
 
         with open(file_name, 'w', encoding="utf-8") as file:  # 第二引数：writableオプションを指定
             json.dump(jsontext, file, ensure_ascii=False)
 
-        print("デイブレイカー駒データを生成しました")
+        print("デイブレイカーコア駒データを生成しました")
 
 
 class CharacterData():
@@ -868,18 +700,18 @@ class CharacterData():
         jsontext["data"]["invisible"] = "false"
         jsontext["data"]["hideStatus"] = "false"
         jsontext["data"]["externalUrl"] = self.url
-        jsontext["data"]["commands"] = "//能力値判定\n2d6+{体力B}+0[{クリティカル値},{ファンブル値}]　体力判定\n" + \
-                                       "2d6+{反射B}+0[{クリティカル値},{ファンブル値}]　反射判定\n" + \
-                                       "2d6+{知覚B}+0[{クリティカル値},{ファンブル値}]　知覚判定\n" + \
-                                       "2d6+{理知B}+0[{クリティカル値},{ファンブル値}]　理知判定\n" + \
-                                       "2d6+{意志B}+0[{クリティカル値},{ファンブル値}]　意志判定\n" + \
-                                       "2d6+{幸運B}+0[{クリティカル値},{ファンブル値}]　幸運判定"
-        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_未装備駒データ.txt"
+        jsontext["data"]["commands"] = "//能力値判定\nAL+{体力B}+0　体力判定\n" + \
+                                       "AL+{反射B}+0　反射判定\n" + \
+                                       "AL+{知覚B}+0　知覚判定\n" + \
+                                       "AL+{理知B}+0　理知判定\n" + \
+                                       "AL+{意志B}+0　意志判定\n" + \
+                                       "AL+{幸運B}+0　幸運判定"
+        file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_リンケージ駒データ.txt"
 
         with open(file_name, 'w', encoding="utf-8") as file:  # 第二引数：writableオプションを指定
             json.dump(jsontext, file, ensure_ascii=False)
 
-        print("未装備駒データを生成しました")
+        print("リンケージ駒データを生成しました")
 
 
 def get_data(value):
@@ -896,14 +728,14 @@ def get_data(value):
 
     driver.quit()
 
-    tkinter.messagebox.showinfo(title="完了", message="駒データを生成しました")
+    tkinter.messagebox.showinfo(title="完了", message="コア駒データを生成しました")
 
     sys.exit()
 
 
 if __name__ == "__main__":
     root = tkinter.Tk()
-    root.title(u"トワイライトガンスモークRPG ココフォリア用駒データ作成ツール")
+    root.title(u"トワイライトガンスモークRPG ココフォリア用コア駒データ作成ツール")
     root.geometry("400x150")
 
     frame1 = tkinter.Frame(root, width=400, height=50)  # Label
