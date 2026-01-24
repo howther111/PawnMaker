@@ -276,10 +276,6 @@ class HeroData():
             text = text + special + "/"
         text = text[:-1]
 
-        text = text + "\n[*]武器１:" + self.outfits_main_weapon_shortname
-
-        text = text + "\n[*]武器２:" + self.outfits_sub_weapon_shortname
-
         #text = text + "\nアイテム:"
         #for item in self.items:
         #    text = text + item + "/"

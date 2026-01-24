@@ -306,18 +306,6 @@ class GuardianData():
             text = text + special + "/"
         text = text[:-1]
 
-        text = text + "\n[*]主近:" + self.outfits_main_weapon_shortname
-
-        text = text + "\n[*]副近:" + self.outfits_sub_weapon_shortname
-
-        text = text + "\n[*]主遠:" + self.outfits_main_weapon_longname
-
-        text = text + "\n[*]副遠:" + self.outfits_sub_weapon_longname
-        #text = text + "\nアイテム:"
-        #for item in self.items:
-        #    text = text + item + "/"
-        #text = text[:-1]
-
         print(text)
 
         file_name = self.guardian_name.replace("/", "_").replace("\"", "”") + "_ガーディアンコアテキストデータ.txt"

@@ -323,19 +323,6 @@ class GuardianData():
             text = text + special + "/"
         text = text[:-1]
 
-        text = text + "\n[*]物武1:" + self.outfits_physical_w_1name
-
-        text = text + "\n[*]物武2:" + self.outfits_physical_w_2name
-
-        text = text + "\n[*]電武1:" + self.outfits_electrical_w_1name
-
-        text = text + "\n[*]電武2:" + self.outfits_electrical_w_2name
-
-        #text = text + "\nアイテム:"
-        #for item in self.items:
-        #    text = text + item + "/"
-        #text = text[:-1]
-
         print(text)
 
         file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_デイブレイカーコアテキストデータ.txt"

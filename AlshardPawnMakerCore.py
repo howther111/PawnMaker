@@ -301,14 +301,6 @@ class GuardianData():
             text = text + special + "/"
         text = text[:-1]
 
-        text = text + "\n[*]武右:" + self.outfits_rightname
-
-        text = text + "\n[*]武左:" + self.outfits_leftname
-
-        text = text + "\n[*]魔右:" + self.outfits_magicrightname
-
-        text = text + "\n[*]魔左:" + self.outfits_magicleftname
-
         print(text)
 
         file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_クエスターコアテキストデータ.txt"
