@@ -398,7 +398,7 @@ class GuardianData():
         jsontext["data"]["status"][2]["max"] = self.add_fortune_point
 
         jsontext["data"]["status"].append({})
-        jsontext["data"]["status"][3]["label"] = "ブレイク"
+        jsontext["data"]["status"][3]["label"] = "覚醒"
         jsontext["data"]["status"][3]["value"] = 1
         jsontext["data"]["status"][3]["max"] = 1
 
