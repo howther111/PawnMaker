@@ -651,7 +651,7 @@ class GuardianData():
         if "<chatpalette_guardian_start>\n" in self.base_memo:
             after_start = self.base_memo.split("<chatpalette_guardian_start>\n")[1]
             before_end = after_start.split("<chatpalette_guardian_end>")[0]
-            if "<no_default_guardian_chatpalette>\n" in self.base_memo:
+            if "<no_default_chatpalette_guardian>\n" in self.base_memo:
                 command = before_end
             else:
                 command = command + "\n\n" + before_end
@@ -869,7 +869,7 @@ class CharacterData():
         if "<chatpalette_linkage_start>\n" in self.base_memo:
             after_start = self.base_memo.split("<chatpalette_linkage_start>\n")[1]
             before_end = after_start.split("<chatpalette_linkage_end>")[0]
-            if "<no_default_linkage_chatpalette>\n" in self.base_memo:
+            if "<no_default_chatpalette_linkage>\n" in self.base_memo:
                 command = before_end
             else:
                 command = command + "\n\n" + before_end
