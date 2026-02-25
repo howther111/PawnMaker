@@ -372,6 +372,7 @@ class GuardianData:
     character_sex = ""
     character_height = ""
     character_weight = ""
+    memo = ""
 
     player_name = ""
 
@@ -451,6 +452,7 @@ class GuardianData:
         self.character_height = get_field_by_label(driver, "身長")
         self.character_weight = get_field_by_label(driver, "体重")
         self.player_name = get_field_by_label(driver, "プレイヤー名")
+        self.memo = get_field_by_label(driver, "メモ欄")
 
         abilities = get_abilities(driver)
 
@@ -863,7 +865,15 @@ class GuardianData:
         command = command + "1d20+{動物使い} 〈動物使い〉【判】技能判定\n"
         command = command + "1d20+{ペテン} 〈ペテン〉【魅】技能判定\n"
         command = command + "1d20+{魔法学} 〈魔法学〉【知】技能判定\n"
-        command = command + "1d20+{歴史} 〈歴史〉【知】技能判定\n"
+        command = command + "1d20+{歴史} 〈歴史〉【知】技能判定"
+
+        if "<chatpalette_start>\n" in self.memo:
+            after_start = self.memo.split("<chatpalette_start>\n")[1]
+            before_end = after_start.split("<chatpalette_end>")[0]
+            if "<no_default_chatpalette>\n" in self.memo:
+                command = before_end
+            else:
+                command = command + "\n\n" + before_end
 
         jsontext["data"]["commands"] = command
         jsontext["data"]["externalUrl"] = self.url
