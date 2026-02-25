@@ -12,6 +12,7 @@ import json
 
 
 class GuardianData():
+    base_memo = ""
     character_name = ""
     level = 0
     player_name = ""
@@ -91,6 +92,7 @@ class GuardianData():
 
     def input_data(self, driver, input_url):
         self.url = input_url
+        self.base_memo = driver.find_element(by=By.ID, value="base.memo").get_attribute("value")
         self.character_name = driver.find_element(by=By.ID, value="base.name").get_attribute("value")
         self.level = driver.find_element(by=By.ID, value="base.level").get_attribute("value")
         self.player_name = driver.find_element(by=By.ID, value="base.player").get_attribute("value")
@@ -605,6 +607,14 @@ class GuardianData():
             or "特技" in self.items[i] or "非アイテム" in self.items[i] or "非表示" in self.items[i]):
                 itemstr = self.items[i].split("*")
                 command = command + "\nアイテム名:" + itemstr[0].replace("\n", "") + "/効果:" + self.items_effect[i].replace("\n", "")
+
+        if "<chatpalette_start>\n" in self.base_memo:
+            after_start = self.base_memo.split("<chatpalette_start>\n")[1]
+            before_end = after_start.split("<chatpalette_end>")[0]
+            if "<no_default_chatpalette>\n" in self.base_memo:
+                command = before_end
+            else:
+                command = command + "\n\n" + before_end
 
         jsontext["data"]["commands"] = command
         jsontext["data"]["externalUrl"] = self.url

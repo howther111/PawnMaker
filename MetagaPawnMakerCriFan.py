@@ -12,6 +12,7 @@ import json
 
 
 class GuardianData():
+    base_memo = ""
     character_name = ""
     guardian_name = ""
     level = 0
@@ -92,6 +93,7 @@ class GuardianData():
 
     def input_data(self, driver, input_url):
         self.url = input_url
+        self.base_memo = driver.find_element(by=By.ID, value="base.memo").get_attribute("value")
         self.character_name = driver.find_element(by=By.ID, value="base.name").get_attribute("value")
         self.guardian_name = driver.find_element(by=By.ID, value="base.guardian.name").get_attribute("value")
         self.level = driver.find_element(by=By.ID, value="base.level").get_attribute("value")
@@ -646,6 +648,14 @@ class GuardianData():
                 command = command + "\nアイテム名:" + itemstr[0].replace("\n", "") + "/効果:" + self.items_effect[
                     i].replace("\n", "")
 
+        if "<chatpalette_guardian_start>\n" in self.base_memo:
+            after_start = self.base_memo.split("<chatpalette_guardian_start>\n")[1]
+            before_end = after_start.split("<chatpalette_guardian_end>")[0]
+            if "<no_default_guardian_chatpalette>\n" in self.base_memo:
+                command = before_end
+            else:
+                command = command + "\n\n" + before_end
+
         jsontext["data"]["commands"] = command
         jsontext["data"]["externalUrl"] = self.url
         file_name = self.guardian_name.replace("/", "_").replace("\"", "”") + "_ガーディアン駒データ.txt"
@@ -657,6 +667,7 @@ class GuardianData():
 
 
 class CharacterData():
+    base_memo = ""
     url = ""
     character_name = ""
     player_name = ""
@@ -686,6 +697,7 @@ class CharacterData():
 
     def input_data(self, driver, input_url):
         self.url = input_url
+        self.base_memo = driver.find_element(by=By.ID, value="base.memo").get_attribute("value")
         self.character_name = driver.find_element(by=By.ID, value="base.name").get_attribute("value")
         self.player_name = driver.find_element(by=By.ID, value="base.player").get_attribute("value")
         self.strong_total = driver.find_element(by=By.ID, value="abl.strong.total").get_attribute("value")
@@ -847,12 +859,23 @@ class CharacterData():
         jsontext["data"]["invisible"] = "false"
         jsontext["data"]["hideStatus"] = "false"
         jsontext["data"]["externalUrl"] = self.url
-        jsontext["data"]["commands"] = "//能力値判定\n2d6+{体力B}+0[{クリティカル値},{ファンブル値}]　体力判定\n" + \
+        command = "//能力値判定\n2d6+{体力B}+0[{クリティカル値},{ファンブル値}]　体力判定\n" + \
                                        "2d6+{反射B}+0[{クリティカル値},{ファンブル値}]　反射判定\n" + \
                                        "2d6+{知覚B}+0[{クリティカル値},{ファンブル値}]　知覚判定\n" + \
                                        "2d6+{理知B}+0[{クリティカル値},{ファンブル値}]　理知判定\n" + \
                                        "2d6+{意志B}+0[{クリティカル値},{ファンブル値}]　意志判定\n" + \
                                        "2d6+{幸運B}+0[{クリティカル値},{ファンブル値}]　幸運判定"
+
+        if "<chatpalette_linkage_start>\n" in self.base_memo:
+            after_start = self.base_memo.split("<chatpalette_linkage_start>\n")[1]
+            before_end = after_start.split("<chatpalette_linkage_end>")[0]
+            if "<no_default_linkage_chatpalette>\n" in self.base_memo:
+                command = before_end
+            else:
+                command = command + "\n\n" + before_end
+
+        jsontext["data"]["commands"] = command
+
         file_name = self.character_name.replace("/", "_").replace("\"", "”") + "_リンケージ駒データ.txt"
 
         with open(file_name, 'w', encoding="utf-8") as file:  # 第二引数：writableオプションを指定

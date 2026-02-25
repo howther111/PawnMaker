@@ -19,6 +19,7 @@ def none_to_str(value):
 
 class ArmoredCoreData():
     url = ""
+    base_memo = ""
     player_name = ""
     cord_name = ""
     ac_name = ""
@@ -162,6 +163,7 @@ class ArmoredCoreData():
 
     def input_data(self, driver, input_url):
         self.url = input_url
+        self.base_memo = driver.find_element(by=By.ID, value="base.memo").get_attribute("value")
         self.player_name = driver.find_element(by=By.ID, value="base.player").get_attribute("value")
         self.cord_name = driver.find_element(by=By.ID, value="base.name").get_attribute("value")
         self.ac_name = driver.find_element(by=By.ID, value="base.acname").get_attribute("value")
@@ -1027,6 +1029,14 @@ class ArmoredCoreData():
                           "/種別:" + self.skill_type[i] + "/タイミング:" + \
                           self.skill_timing[i] + \
                           "/代償:" + self.skill_cost[i] + "/効果:" + self.skill_effect[i].replace("\n", "")
+
+        if "<chatpalette_start>\n" in self.base_memo:
+            after_start = self.base_memo.split("<chatpalette_start>\n")[1]
+            before_end = after_start.split("<chatpalette_end>")[0]
+            if "<no_default_chatpalette>\n" in self.base_memo:
+                command = before_end
+            else:
+                command = command + "\n\n" + before_end
 
         jsontext["data"]["commands"] = command
 
